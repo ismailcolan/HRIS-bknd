@@ -1,0 +1,79 @@
+.table table th:first-child, 
+table#pending-orders-table tr th:nth-child(3),
+.table table tr :nth-child(4),
+.table table#complete-orders-table tr :nth-child(5),
+table#pending-orders-table tr th:last-child {text-align:center;}
+table#pending-orders-table tr th:last-child {width: 248px}
+.table table tr td:first-child, 
+.table table tr td:nth-child(3) {text-align:right;} 
+table#pending-orders-table tr td:last-child .btn {font-size: 14px;}
+
+section .content .table.products tr td {vertical-align:top;}
+section .content .table tr th.item-name {width: 25%;}
+section .content .table tr td.qty {text-align:center;}
+section .content .table tr td.qty .fld.form-group {margin:0px;}
+section .content .table tr td.qty span.err {position:absolute;}
+section .content .table tr td.total {border-bottom-color:#fff;}
+section .content .table tr td.total span#grand-total {font-weight:bold; padding-left: 10px;}
+section .content .table tr td.item-total, #grand-total {color:#666;}
+
+section .content .table.order tr th:last-child, section .content .table.order tr td:last-child {text-align:right;}
+section .content .table.order tr td.qty {width:40px;}
+section .content .table.order tr td.price {width:80px; text-align: right;}
+section .content .table.order tr th.delivery-header {max-width:70%;}
+section .content .table.order tr td.delivery .form-group {margin: 5px 0px 15px;}
+section .content .table.order tr td.delivery .form-group label .btn {margin: 0px 10px;}
+section .content .table.order tr td.delivery .form-group .form-control {display:inline-block;}
+section .content .table.order tr th:last-child {width: 80px;}
+section .content .table.order tr th:nth-child(4) {text-align:right;}
+/*section .content .table.order tr td.delivery .form-group.qty.received.pending {display:none;}
+section .content .table.order tr td.delivery .form-group.qty.returns {display:none;}*/
+section .content .table.order tr td.delivery .form-group.qty input.form-control {width: 60px;}
+section .content .table.order tr td.delivery .form-group.qty textarea.form-control {resize: vertical; overflow: auto;}
+section .content .table.order tr td.delivery .form-group.qty .err {display:block;}
+section .content .table.order tr td.delivery .delivery-data .comments {display:block; border-top: 1px dotted #ccc; margin: 5px 15px; font-style:italic;}
+section .content .table.order tr td.delivery .delivery-data {margin: 0px 0px 10px;}
+section .content .table.order tr td.delivery .delivery-data:last-child {margin-bottom:0px;}
+
+
+section .content .table.shopping-cart tr td.price {width:100px; text-align: right;}
+section .content .table.shopping-cart tr th:nth-child(3) {text-align:right;}
+section .content .table.shopping-cart tr th:nth-child(4) {text-align:center;}
+section .content .table.shopping-cart tr td:nth-child(5) {text-align:right; width:100px; font-weight:bold;}
+section .content .table.shopping-cart tr td.total {padding-right: 120px;}
+section .content .table.shopping-cart tr td.total .pull-right {line-height:34px;}
+section .content .table.shopping-cart tr td.total .fld {margin-bottom:0px;}
+section .content .table.shopping-cart tr td .control-label{float: left; padding-left: 15px;}
+section .content .table.shopping-cart tr td.cart-empty {text-align:center; font-style:italic;}
+section .content .btn.shopping-cart-go {width:200px;}
+
+.table table thead tr th a {color: #fff; line-height: 18px;}
+.table table tbody tr td {padding:5px 2px 5px 4px;}
+
+.panel-stats {margin-top:15px;}
+.panel-stats #orders-list .filter {
+    display: none;
+}
+.panel-stats #orders-list th {
+    background-color: #8f7999;
+    color: #fff;
+    border-top: none;
+    padding: 10px;
+}
+
+.panel-stats #orders-list {margin-bottom:0px;}
+.panel-stats #orders-list tr th:nth-child(2), .panel-stats #orders-list tr td:nth-child(2) {text-align:center;}
+.panel-stats #orders-list tr th:nth-child(3), .panel-stats #orders-list tr td:nth-child(3) {text-align:left;}
+.panel-stats #orders-list tr td:last-child {text-align:right;}
+.panel-stats .panel-footer {background-color:#fff;
+    background: transparent;
+    border-top: 1px dotted #ddd;
+    border-bottom: 1px dotted #337ab7;
+}
+.panel-stats .panel-footer .fld {margin-bottom:0px;}
+
+.msg_order_review {
+    font-size: 19px;
+    color: white;
+    background-color: #337ab7;
+}

@@ -1,0 +1,13 @@
+#company_offices-table tr th:first-child, 
+#company_offices-table tr :nth-child(4),
+#company_offices-table tr :nth-child(5),
+#company_offices-table tr :nth-child(6),
+#company_offices-table tr th:last-child {text-align:center;}
+
+#company_offices-table tr td:nth-child(4),
+#company_offices-table tr td:nth-child(6),
+#company_offices-table tr td:last-child {text-align:right;}
+#company_offices-table tr td:not(:last-child ) a + a {margin-left: 5px;}
+#company_offices-table tr td[colspan] {text-align:center; font-style:italic}
+
+

@@ -1,0 +1,31 @@
+<header>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1><a id="main-logo" href="<?=SUPERADMIN?>">Customers Super Admin Site</a></h1>
+                <a href="<?=SUPERADMIN?>">Super Admin Page</a>
+            </div>
+            <div class="col-sm-6 text-right">
+                <span class="fa fa-user"></span> <span><?=$_SESSION['superadmin']?></span> | 
+                <!-- Consider move of the admins and change-pass liks as sub-links of the home (it to become: dashboard) -->
+                <a id="logout-lnk" href="<?= (intval(AppModel::$admin['waaAFID']) > 0 ? WP.'sign-out?from-admin=true' : SUPERADMIN.'logout') ?>"><span class="fa fa-sign-out"></span><span>Log out</span></a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container-fluid">
+     <div class="row" > 
+	    <div id="menu">
+			<ul  class="top-level-menu">
+				<?=$v["page-nav"]?>
+			</ul>
+		</div>
+			
+	    <div id="main-nav" >
+			<div id="sub-nav">
+				<ul><?=$v["page-sub"]?></ul>
+			</div>
+		</div>
+		
+    </div>
+</div>

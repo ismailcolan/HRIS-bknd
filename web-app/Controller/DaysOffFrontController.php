@@ -1,0 +1,527 @@
+<?php
+class DaysOffFrontController extends AppController{
+
+    const __DUMP__ = false;
+
+    public static $id, $data, $pg;
+	
+	public static function ShowAnotherEmployee(){
+		
+		DaysOffFrontView::ViewDaysOffOfUser();
+	}
+	
+	public static function CancelRequest(){
+			$id=$_GET['req_id'];
+			$q= "SELECT * FROM  vacation_requests  WHERE vrID={$id}";
+			
+			$res=db::PrepareLoadSingleRow($q);
+			
+			$q="DELETE FROM  vacation_requests  WHERE vrID={$id}";
+			
+			
+			$r=db::SQL($q);
+			//$r=true;
+			$from=val::convDate(MYSQL_DATE,USER_DATE,$res['vrDateStart']);
+			$to=val::convDate(MYSQL_DATE,USER_DATE,$res['vrDateEnd']);
+			$from1=str_replace('/','-',$from);
+			$to1=str_replace('/','-',$to);
+			
+			/********** send mail to manager ************/
+			$q='SELECT * FROM apply_forms WHERE afID='.AppModel::$usr['afRMID'];
+			$man=db::PrepareLoadSingleRow($q);
+			
+			
+			$subject="Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']." has cancelled days off";
+			$mail_body="
+			Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']." has cancelled the following days off:<br><br>
+			Start Date: {$from}<br>
+			End Date: {$to}<br>
+			<br>
+			".MAIL_FOOTER_HTML;
+			//{$res['vrType']}, {$res['vrPaydUnpaid']}<br>
+			cf::sendMail($man['afEmail'],// Manager mail here 
+						$subject, 
+						$mail_body, 
+						$GLOBALS['EMAIL_MAILER_NAME'], 
+						$GLOBALS['EMAIL_MAILER_ADDRESS']
+			);
+			/***********   END MAILNG *****************/
+			
+			if ($r) 
+				msg::set("The following request has been cancelled: {$res['vrType']} {$res['vrPaydUnpaid']} from {$from} to {$to}.",'popup');
+			
+			else msg::set('There was a problem to cancel that request.','error');
+			
+			$go_to_year=val::convDate(USER_DATE,'Y',$from);
+			cf::Redirect(WP.'days-off?go_to_year='.$go_to_year);
+	}
+	
+	public static function checkOverdueCredentialing($empID){
+		$today = new DateTime();
+        $query = "SELECT * FROM employee_credentialing
+		LEFT JOIN credentialings ON ecCID=cID
+		WHERE ecAFID={$empID} AND ecDueDate <'".$today->format(MYSQL_DATE_TIME)."' AND cActive = 'Yes' AND ecUploadedOn IS NULL";	
+		
+		$res=db::PrepareLoad($query);
+		if($res === false) return true;
+		else return false;
+		
+	}
+	
+	public static function ViewDaysOff(){
+		
+		if (isset($_POST) &&  isset($_GET['cmd']) && $_GET['cmd']=='shorten'){
+			$date_start = val::convDate(USER_DATE,MYSQL_DATE,$_POST['startDate']);
+			$date_end =	val::convDate(USER_DATE,MYSQL_DATE,$_POST['endDate']);
+			
+			$q= "SELECT * FROM  vacation_requests  WHERE vrID={$_POST['id']}";
+			$old=db::PrepareLoadSingleRow($q);
+			
+			$q="UPDATE vacation_requests SET 
+			vrDateStart='{$date_start}',	vrDateEnd='{$date_end}',
+			vrDays={$_POST['days']}
+			WHERE vrID={$_POST['id']}";
+			
+			$res=db::SQL($q);
+			
+			/********** send mail to manager ************/
+			
+			
+			$q='SELECT * FROM apply_forms WHERE afID='.AppModel::$usr['afRMID'];
+			$man=db::PrepareLoadSingleRow($q);
+			
+			$oldStartDate=val::convDate(MYSQL_DATE,USER_DATE,$old['vrDateStart']);
+			$oldEndDate=val::convDate(MYSQL_DATE,USER_DATE,$old['vrDateEnd']);
+			
+			$subject="Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']." has shortened days off";
+			$mail_body="
+			Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']." has shortened the following days off:<br>
+			<br>
+			CURRENT Start Date: {$oldStartDate}<br>
+			CURRENT End Date: {$oldEndDate}<br>\r\n
+			<br>
+			NEW Start Date: {$_POST['startDate']}<br>
+			NEW End Date: {$_POST['endDate']}<br>
+			<br>
+			".MAIL_FOOTER_HTML;
+			
+			//{$res['vrPaydUnpaid']} ({$res['vrType']})
+			
+			cf::sendMail($man['afEmail'],// Manager mail here 
+						$subject, 
+						$mail_body, 
+						$GLOBALS['EMAIL_MAILER_NAME'], 
+						$GLOBALS['EMAIL_MAILER_ADDRESS']
+			);
+			/***********   END MAILNG *****************/
+			//$sd=val::convDate(MYSQL_DATE,USER_DATE,$_POST['startDate']);
+			//$ed=val::convDate(MYSQL_DATE,USER_DATE,$_POST['endDate']);
+			if($res) msg::set("The request has been shortened to {$_POST['startDate']} - {$_POST['endDate']}.",'popup');
+			else msg::set('There was problem in saving your shortening request.','error');
+			$go_to_year=$_POST['year'];
+			cf::Redirect(WP.'days-off?go_to_year='.$go_to_year);
+			
+		}
+
+		if (isset($_POST) &&  isset($_GET['cmd']) && $_GET['cmd']=='save'){
+			
+			if(isset($_POST['half_day']) && $_POST['half_day']=='half_day')  {
+				$_POST['days']=0.5;
+				$_POST['endDate']=$_POST['startDate'];
+			}
+			/**********  check overdue credentialing etc *************/
+			$_OK=true;
+			$onboarding=false;
+			$reason='';
+			/***********
+			if (!self::checkOverdueCredentialing(AppModel::$usr['afID'])){
+				$onboarding=true;
+				$reason.='Overdue Credentialing';
+				$_OK = false;
+			}
+			**********/
+			if (!empty(EmployeeModel::IncompleateOnboardingIAmResponsibleFor(AppModel::$usr['afID']))){
+				$onboarding=true;
+				if($reason !='') $reason.=' and ';
+				$reason.=" incomplete onboarding tasks (for which you're a responsible employee)";
+				$_OK = false;
+			}
+			
+			if (!isset(AppModel::$usr['afShortResume']) || trim(AppModel::$usr['afShortResume'])==''  || 
+				!isset(AppModel::$usr['afSpecialSkills']) || trim(AppModel::$usr['afSpecialSkills'])=='')  {
+				if ($reason !='') $reason.='; ';
+				$reason.='Incomplete profile (no info for Skills and Hobbies or Short Resume)';
+				$_OK = false;
+			}
+			
+			//$imgFile = IMAGES_DIR.'form-photo/'. str_replace("{---LiveID---}", AppModel::$usr['afID'], ApplyFormModel::IMG_FILENAME);
+			$imgFile = IMAGES_DIR.'form-photo/'. str_replace("{---LiveID---}", AppModel::$usr['afID'], ApplyFormModel::IMG_FILENAME);
+			//echo '>>>>>'. $imgFile;echo '<br>'.$_SESSION['customerID'];exit;
+			if(! file_exists( $imgFile)){
+				if ($reason !='') $reason.='; ';
+				$reason.='Photo not uploaded';
+				$_OK = false;
+			}
+			
+			if($_OK === false){
+				$go_to_year=$_POST['year'];
+				if ($onboarding) {
+					msg::set("The system is unable to process your request because you've got ".$reason.'.','error');
+					cf::Redirect(WP.'days-off?go_to_year='.$go_to_year);
+					exit;
+				}
+				else {
+					msg::set('The system is unable to process your request for the following reasons: '.$reason.'.','error');
+					cf::Redirect(WP.'days-off?go_to_year='.$go_to_year);
+					exit;
+				}
+			}
+		
+			/********** end check overdue credentialing etc *************/
+			
+			$userID=AppModel::$usr['afID'];
+			$is_paid=$_POST['vacType'];
+			$date_start = val::convDate(USER_DATE,MYSQL_DATE,$_POST['startDate']);
+			$date_end =	val::convDate(USER_DATE,MYSQL_DATE,$_POST['endDate']);
+			$now=date(MYSQL_DATE);
+			
+			$days=DaysOffFrontModel::getWorkingDaysBetween($userID,$date_start,$date_end);
+			foreach ($days as $k=>$d){
+				$date=str_replace('-','/',$d).'/'.$_POST['year'];
+				$days[$k]=val::convDate(USER_DATE,MYSQL_DATE,$date);
+			}
+			$days_list=implode(',',$days);
+			
+			$totalVac = DaysOffFrontModel::getDefaultDays(AppModel::$usr['afID'],$_POST['year'],'Vacation');
+			$usedVac = DaysOffFrontModel::getUsedDays(AppModel::$usr['afID'],$_POST['year'],['Vacation','Sick leave'],'paid');
+			$remainVac = $totalVac-$usedVac;
+			if ($remainVac<0) $remainVac=0;
+		
+			$totalCE = DaysOffFrontModel::getDefaultDays(AppModel::$usr['afID'],$_POST['year'],'CE');
+			$usedCE = DaysOffFrontModel::getUsedDays(AppModel::$usr['afID'],$_POST['year'],['CE'],'paid');
+			$remainCE = $totalCE-$usedCE;
+			if ($remainCE<0) $remainCE=0;
+	
+
+			if ($_POST['vacType']=='Sick leave' || $_POST['vacType']=='Jury duty')
+				$state='approved';
+			else {
+				if ($_POST['paid_type']=='paid') $state='approved';
+				else $state='pending';
+			}
+			
+			
+			$q="INSERT INTO vacation_requests SET 
+			vrAFID={$userID},vrYear='{$_POST['year']}',
+			vrDateStart='{$date_start}',	vrDateEnd='{$date_end}',
+			vrState='{$state}',vrDays={$_POST['days']},	vrType='{$_POST['vacType']}',
+			vrPaydUnpaid='{$_POST['paid_type']}',vrDateEntered='{$now}',vrRealDays='{$days_list}'";
+			
+			
+			
+			$res=db::SQL($q);
+			if($res) {
+				if ($state=='approved') {
+					msg::set('Your request has been approved. ','success');
+					msg::set('Your request has been approved .','popup');
+				}
+				else {
+					msg::set("Your request has been sent for approval. You'll be notified when approved or declined.",'success');
+					msg::set("Your request has been sent for approval. You\'ll be notified when approved or declined.",'popup');
+				}
+			}
+			else msg::set('There was problem in saving request.','error');
+			
+			$date_start= val::convDate(MYSQL_DATE,USER_DATE,$date_start);
+			$date_end  = val::convDate(MYSQL_DATE,USER_DATE,$date_end);
+			
+			$q='SELECT * FROM apply_forms WHERE afID='.AppModel::$usr['afRMID'];
+			$man=db::PrepareLoadSingleRow($q);
+			
+			$half_day='';
+			if(isset($_POST['half_day']) && $_POST['half_day']=='half_day')  {
+				$half_day=' (HALF DAY) ';
+			}
+				
+			if ($state=='approved'){
+				$subject="Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']
+				." will be away from {$date_start} to {$date_end} {$half_day} ( {$_POST['vacType']} )"; //{$_POST['paid_type']}
+				$mail_body=$subject.'<br>'.MAIL_FOOTER_HTML;
+				
+				cf::sendMail($man['afEmail'],// Manager mail here 
+							$subject, 
+							$mail_body, 
+							$GLOBALS['EMAIL_MAILER_NAME'], 
+							$GLOBALS['EMAIL_MAILER_ADDRESS']
+				);
+			}
+			else {
+				$subject="Employee ".AppModel::$usr['afFirstName']." ".AppModel::$usr['afLastName']
+				." has sent a request for days off from {$date_start} to {$date_end} {$half_day} ( {$_POST['vacType']} )"; //{$_POST['paid_type']}
+				$mail_body=$subject.'<br>'
+				.'Please login to your account and go to My Employees - Day Off Requests to approve or decline it.<br>'
+				.MAIL_FOOTER_HTML;
+				
+				cf::sendMail($man['afEmail'],// Manager mail here 
+							$subject, 
+							$mail_body, 
+							$GLOBALS['EMAIL_MAILER_NAME'], 
+							$GLOBALS['EMAIL_MAILER_ADDRESS'] 
+				);
+				
+			}
+			
+			$go_to_year=$_POST['year'];
+			cf::Redirect(WP.'days-off?go_to_year='.$go_to_year);
+		}
+		
+		
+		$endYear=date('Y',strtotime(AppModel::$usr['afStartDate']));
+		$data=array();
+		$data['years']=array();
+		
+		for($i=date('Y')+1;$i>=$endYear;$i--){
+			$data['years'][]= $i;
+		}
+		
+		DaysOffFrontView::ViewDaysOff($data,@$go_to_year);
+		
+	}
+	
+	public static function GetDaysOff(){
+		//cf::pr($_GET);exit;
+		$year =$_GET['year'];
+		$startDate = val::convDate(USER_DATE,MYSQL_DATE,$_GET['date_start']);
+		$endDate = val::convDate(USER_DATE,MYSQL_DATE,$_GET['date_end']);
+		
+		$userID = AppModel::$usr['afID'];
+		$q="SELECT * FROM positions WHERE pID = ".AppModel::$usr['afHiredForPID'];
+		$position=db::PrepareLoadSingleRow($q);
+		
+		$vacType = $_GET['vacType'];
+		
+		$totalVac = DaysOffFrontModel::getDefaultDays(AppModel::$usr['afID'],$year,'Vacation');
+		$totalCE = DaysOffFrontModel::getDefaultDays(AppModel::$usr['afID'],$year,'CE');
+		$usedPaid = DaysOffFrontModel::getUsedDays(AppModel::$usr['afID'],$year,['Vacation','Sick leave'],'paid');
+		$usedCE = DaysOffFrontModel::getUsedDays(AppModel::$usr['afID'],$year,['CE'],'paid');
+		$remainPaid = $totalVac-$usedPaid;
+		$remainPaidCE=$totalCE-$usedCE;
+		
+		
+		$daysUsed = DaysOffFrontModel::getUsedDays($userID,$year,[$vacType]);
+		$daysBetween = DaysOffFrontModel::getWorkingDaysBetween($userID,$startDate,$endDate);
+		$daysBetveen = count($daysBetween);
+		
+		
+		$daysPerYear=DaysOffFrontModel::getDefaultDays($userID,$year,$vacType);
+		$d=new DateTime();
+		$today=$d->format('Y-m-d');
+		$res=array();
+		
+		$vacDays=DaysOffFrontModel::getVacDates($userID,$year);
+		$vac_days=DaysOffFrontModel::getWorkingDaysBetweenFull($userID,$startDate,$endDate);
+		
+		if (isset($_GET['type']) && $_GET['type']=='shorten'){
+			$res['result']='OK';
+			$res['days']=$daysBetveen;
+			$res['type']=$_GET['paid_type'];
+			$res['days_msg']=$daysBetveen.' day(s) <b>'.$res['type'].'</b>';
+			echo json_encode($res);exit;
+		}
+		
+		if (! self::checkDates($vac_days,$vacDays)){
+			$res['result']='FAIL';
+			$res['message']='The selected days overlap with already approved days off.';
+			echo json_encode($res);exit;
+		}
+		else {
+			if ($vacType != 'Jury duty' && $vacType!='Sick leave' && !isset($_GET['type'])){
+				$dateAfter3months = date("Y-m-d", strtotime(AppModel::$usr['afDateHired']."+ 3 months"));
+				if($startDate < $dateAfter3months){
+				$res['result']='FAIL';
+				$res['message']='There must be at least 3 months from date when you was hired ('.
+				val::convDate(MYSQL_DATE,USER_DATE,AppModel::$usr['afDateHired']).') ';
+				
+				echo json_encode($res);exit;
+				}
+			}
+			
+			if ($vacType != 'Jury duty' && $vacType!='Sick leave' && !isset($_GET['type'])){
+				$dateAfter2weeks = date("Y-m-d", strtotime("+ ".$position['TwoWeekNoticeNmb']." ".$position['TwoWeekNoticeDim']));
+				
+				if($startDate < $dateAfter2weeks){
+				$res['result']='FAIL';
+				$res['message']='There must be a '
+				.$position['TwoWeekNoticeNmb']."-".str_replace('s','',$position['TwoWeekNoticeDim'])
+					.' notice for vacation or CE.';
+				echo json_encode($res);exit;
+				}
+			}
+			
+			if($vacType != 'Sick leave' && $vacType != 'Jury duty'){
+				$blockOutDays=DaysOffFrontModel::getBlockOutDates($userID,$year);
+				//cf::pr($blockOutDays);echo $startDate.' '.$endDate;exit;
+				if ($blockOutDays===false) $blockOutDays=array();
+				foreach ($blockOutDays as $k=>$boDay){
+					if ($boDay['bodIsInterval']=='single') $boDay['bodDateEnd']=$boDay['bodDateStart'];
+					if (($boDay['bodDateStart']>=$startDate && $boDay['bodDateStart']<=$endDate)
+					|| ( $boDay['bodDateEnd']>=$startDate && $boDay['bodDateEnd']<=$endDate)) {
+						
+						$res['result']='FAIL';
+						if ($boDay['bodIsInterval']=='single') {
+							$bodate=val::convDate(MYSQL_DATE,USER_DATE,$boDay['bodDateStart']);
+							$res['message']=
+							"You've selected a period which includes a blockout date 
+							- {$bodate}. Please send two requests - one before and one 
+							after the blockout date.";
+						}
+						else{	
+							$bodateStart=val::convDate(MYSQL_DATE,USER_DATE,$boDay['bodDateStart']);
+							$bodateEnd=val::convDate(MYSQL_DATE,USER_DATE,$boDay['bodDateEnd']);
+							$res['message']=
+							"You've selected a period which includes a blockout dates
+							: {$bodateStart}-{$bodateEnd}. Please send two requests - one before and one 
+							after the blockout date.";
+						}
+						echo json_encode($res);exit;
+					}
+					
+				}
+			}
+			
+			
+			
+			if ($daysBetveen==0){
+				$res['result']='FAIL';
+				$res['message']='You\'ve selected only non-working days. Your request must include at least one working day.';
+				echo json_encode($res);exit;
+			}
+			
+			elseif ($vacType == 'CE' && $remainPaidCE>=$daysBetveen) {
+				
+				$res['result']='OK';
+				$res['days']=$daysBetveen;
+				$res['type']='paid';
+				$res['days_msg']=$daysBetveen.' day(s) <b>paid</b>';
+			}
+			elseif ($vacType == 'CE' && $remainPaidCE<=0) {
+				$res['result']='OK';
+				$res['days']=$daysBetveen;
+				$res['type']='unpaid';
+				$res['days_msg']=$daysBetveen.' day(s) <b>unpaid</b>';
+			}
+			elseif ($vacType == 'Jury duty' || $remainPaid<=0) {
+				$res['result']='OK';
+				$res['days']=$daysBetveen;
+				$res['type']='unpaid';
+				$res['days_msg']=$daysBetveen.' day(s) <b>unpaid</b>';
+			}
+			elseif (($daysPerYear-$daysUsed)>=$daysBetveen){
+					$res['result']='OK';
+					$res['days']=$daysBetveen;
+					$res['type']='paid';
+					$res['days_msg']=$daysBetveen.' day(s) <b>paid</b>';
+				}
+				else {
+					if ($vacType='Sick leave' && $remainPaid > $daysBetveen){//$daysPerYear==0 ){
+						$res['result']='OK';
+						$res['days']=$daysBetveen;
+						$res['type']='paid';
+						$res['days_msg']=$daysBetveen.' days <b>paid</b>';	
+					}
+					elseif ($vacType='Sick leave' && $remainPaid < 0 ){//$daysPerYear==0 ){
+						$res['result']='OK';
+						$res['days']=$daysBetveen;
+						$res['type']='unpaid';
+						$res['days_msg']=$daysBetveen.' days <b>unpaid</b>';	
+					}
+					else {
+					if ($remainPaid <0 ) $remainPaid=0;
+					$res['result']='FAIL';
+					$res['message']=
+					"You don't have enough paid days ( remain ".$remainPaid."). Please submit 2 requests - one for all paid days left and the rest as unpaid.";
+					echo json_encode($res);exit;
+					}
+				}
+
+			
+		
+		
+		    if ($vacType != 'Sick leave' &&  $vacType!='Jury duty'){
+				/***************CHECK FOR MIN LIMIT ***********************/
+				$userPosId=AppModel::$usr['afHiredForPID'];
+				$userOfficeId=AppModel::$usr['afCOID'];
+				
+				
+				foreach ($daysBetween as $k=>$d){
+					$date=str_replace('-','/',$d).'/'.$year;
+					$days[$k]=val::convDate(USER_DATE,MYSQL_DATE,$date);
+				}
+				$days_list=implode(',',$days);
+				
+				// get limit per office
+				$q="SELECT * from positions WHERE pID={$userPosId}";
+				$_res=db::PrepareLoadSingleRow($q);
+				if ($_res !== false){
+					$off_limits=json_decode($_res['pMinEmplPerPosArr'],true);
+					if (isset($off_limits[$userOfficeId])) $limit=$off_limits[$userOfficeId];
+					else $limit=MIN_EMP_PER_POSITION;
+				}
+				else $limit=MIN_EMP_PER_POSITION;
+				
+				// get all in same office with same position
+				$q22="SELECT * FROM  apply_forms WHERE  afActive='Hired' AND afHiredForPID={$userPosId} AND afCOID={$userOfficeId}";
+				$_res=db::PrepareLoad($q22);
+				
+				$colegues=array();
+				
+				foreach ($_res as $r){
+					//if ($r['afID']!=$userID ) 
+						$colegues[]=$r['afID'];
+				}
+				$colegues_count=count($colegues);
+				// get vacations of all another
+				$col_list=implode(',',$colegues);
+				
+				$q="SELECT * FROM vacation_requests WHERE vrState IN ('approved') AND vrAFID IN ({$col_list})  AND vrYear={$year}";
+				$dates = db::PrepareLoad($q);
+				if ($dates==false) $dates=array();
+				
+				$bad_days=array();
+				foreach ($days as $day){
+					$employees=$colegues_count;
+					foreach($dates as $date){
+						if ($day>=$date['vrDateStart'] && $day<=$date['vrDateEnd']){
+							$employees--;
+						}
+					}
+					if($employees-1 < $limit) $bad_days[]=$day;
+				}
+	
+				if (!empty($bad_days)){//
+					$res['result']='FAIL';
+					foreach ($bad_days as $j=>$d) $bad_days[$j]=val::convDate(MYSQL_DATE,USER_DATE,$d);
+					$bad_days_str=implode(',',$bad_days);
+					$res['message']='Cannot take vacation/CE on the selected dates - not enough employees left for your position and office.';
+					echo json_encode($res);exit;
+				}
+				
+			}
+		}//end chek for limit 
+		
+		
+		echo json_encode($res);exit;
+	}
+	
+	
+	public static function checkDates($reqDates,$vacDays){
+		if ($vacDays== false) $vacDays=array();
+		foreach ($vacDays as $r){
+			$dates=explode(',',$r['vrRealDays']);
+			foreach ($reqDates as $d){
+				if (in_array($d,$dates)) return false;
+			}
+		}
+		return true;
+	}
+}

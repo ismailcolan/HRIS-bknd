@@ -1,0 +1,10 @@
+.app-msg {position:relative; padding:10px; border:1px solid #888;}
+.app-msg a {display:block; float:right; text-decoration:none; opacity:.5; font-size:20px; line-height:100%;}
+.app-msg a:hover {opacity:1;}
+.app-msg.plain {background:rgba(200,200,200,.3); border-color:#888;}
+.app-msg.error {background:#fcc; border-color:#f00;}
+.app-msg.success {background:#cfc; border-color:#0f0;}
+.app-msg.msg-fadeout {-webkit-animation: fadeout .8s; /* Chrome, Safari, Opera */ animation: fadeout .8s}
+/* Chrome, Safari, Opera */ @-webkit-keyframes fadeout { from {opacity: 100;} to {opacity: 0;} }
+/* Standard syntax */ @keyframes fadeout { from {opacity: 100;} to {opacity: 0;} }
+

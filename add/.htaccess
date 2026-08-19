@@ -1,0 +1,19 @@
+#RewriteCond %{REQUEST_URI} (add|css|js|json|web-app|phpdoc)($|/) 
+RewriteEngine On
+RewriteBase /add/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+#add/helpers/...
+RewriteRule ^captcha.jpg web-app-router.php?front-file=front-page&page-url=captcha [NC,L,QSA]
+
+RewriteRule ^helpers/([a-zA-Z0-9-]*)/(add|js)/(.*) ../web-app/helpers/$1/$2/$3 [NC,L]
+RewriteRule ^helpers/(.*) /web-app/helpers/$1 [NC,L]
+
+
+#add/data/...
+#Data (data)
+RewriteRule ^data/([a-zA-Z0-9\-\(\)\/]+) ../web-app-router.php?front-file=front-data [L,QSA]
+#RewriteRule ^data/(.*) ../$1 [NC,L] 
+#RewriteRule ^add/helpers/(.*)$ web-app/helpers/$1 [NC,L]

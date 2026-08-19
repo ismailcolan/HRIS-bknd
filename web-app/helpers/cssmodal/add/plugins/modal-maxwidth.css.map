@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";;;;;;;;;;;AAQC,qCAAa;EACZ,KAAK,EAAE,IAAI;AAGZ,oCAAqD;EACpD,qCAAa;IACZ,IAAI,EAAE,GAAG;EAGV,2CAAmB;IAClB,KAAK,EAAE,cAAc;AAIvB,mCAAuD;EACtD,qCAAa;IACZ,SAAS,EAAE,eAAe;IAC1B,WAAW,EAAE,YAAY;EAG1B,2CAAmB;IAClB,YAAY,EAAE,YAAY;IAC1B,KAAK,EAAE,YAAY",
+"sources": ["modal-maxwidth.scss"],
+"names": [],
+"file": "modal-maxwidth.css"
+}

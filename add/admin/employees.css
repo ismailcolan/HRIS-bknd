@@ -1,0 +1,13 @@
+table tr th:first-child, 
+table tr :nth-child(4),
+table tr :nth-child(5),
+table tr :nth-child(6),
+table tr th:last-child {text-align:center;}
+
+table tr td:first-child,
+table tr td:nth-child(6),
+table tr td:last-child {text-align:right;}
+table tr td:not(:last-child ) a + a {margin-left: 5px;}
+table tr td[colspan] {text-align:center; font-style:italic}
+
+#employees-table tbody td:last-child a.btn {line-height:20px; width:20px;}

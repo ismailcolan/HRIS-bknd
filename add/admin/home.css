@@ -1,0 +1,18 @@
+table#changelog-records-table tr th:first-child, table#changelog-records-table tr td:first-child,
+table#changelog-records-table tr td:nth-child(3),  table#changelog-records-table tr th:nth-child(3),
+table#changelog-records-table tr th:last-child  {text-align:center;}
+table#changelog-records-table tr td:last-child {text-align:right;}
+
+.header-section {margin-top: 60px; margin-bottom: 0px;}
+
+.home-content {margin-top:20px;}
+.home-content button.edit {display:block; margin-top:15px; width:auto; font-size:15px;}
+.quick-links button {display:block; width:auto; margin-bottom:20px;}
+.quick-links button.website {padding:0px 10px; width:170px;}
+.quick-links button.website span {margin-right:5px;}
+.quick-links button:not(.website) {width:115px;}
+.quick-links.admin button:not(.website) {width:100px;}
+
+.form-panel {padding-top:0px;}
+.fld label {width:100%;}
+.fld input[type="text"] {width:100%;}

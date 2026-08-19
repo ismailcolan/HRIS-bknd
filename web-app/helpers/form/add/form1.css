@@ -1,0 +1,12 @@
+
+.birth-date label {
+	display: block;
+}
+.birth-date div {
+	width:32%;
+	margin-right: 2%;
+	display: inline-block;
+}
+.birth-date div:last-child {
+	margin-right:0;
+}

@@ -1,0 +1,41 @@
+table#products-table tr th:first-child, 
+table#products-table tr th:nth-child(6),
+table#products-table tr :nth-child(8),
+table#products-table tr th:last-child {text-align:center;}
+
+ 
+table#products-table tr td:first-child,
+table#products-table tr td:nth-child(7),
+table#products-table tr td:nth-child(8),
+table#products-table tr td:last-child {text-align:right;}
+table#products-table tr td:not(:last-child ) a + a {margin-left: 5px;}
+table#products-table tr td[colspan] {text-align:center; font-style:italic}
+
+#vp-fld         {margin-bottom:0px; margin-top:50px;}
+#vp-count       {display:none;}
+#vp-selector    {padding-bottom:10px; border-bottom: 1px dotted #ccc;}
+#vp-select      {display:inline-block; width: 80%; vertical-align: top;}
+#vp-select option[disabled] {display:none;}
+#vp-button      {width:18%; float:right; margin:0px; vertical-align:top !important;}
+#vp-new         {display:none;}
+.fld.form-group.price {position:relative; margin-bottom:20px; margin-top:20px;}
+.fld.form-group.price label span[title="Required field"] {display:none;}
+.fld.form-group.price span.err {width:100%; text-align:right;}
+.fld.form-group.price a {position:absolute; left: 15px; top: 0px; width: 34px; height: 34px; line-height:34px; padding:0px; vertical-align:middle; text-align:center; z-index:1000;}
+.fld.form-group.price span.vendor {display:inline-block; width: 70%; height:34px; line-height:34px; position:relative; float:left; padding-left:3px; padding-left: 45px;}
+.fld.form-group.price span.vendor:not(.err) small.text-muted {display:inline-block; margin-left: 20px;}
+.fld.form-group.price span.vendor:after {content:"\f155"; color: #888; position: absolute; right:5px; top:10px; font: normal normal normal 16px/1 FontAwesome;}
+.fld.form-group.price input[type="number"] {display:none;}
+.fld.form-group.price input[type="text"] {text-align:right; width:30%;}
+/*#vp-active-vendor-id-fld       {margin-bottom:70px; position:relative;}*/
+/*#vp-active-vendor-id-fld label span[title^="Required"] {display:none;}*/
+#vp-active-vendor-id-fld label {padding-top:17px;}
+#vp-active-vendor-id-fld div:before {content:" "; display:block;  border-top: 1px dotted #ccc; margin-bottom: 10px; }
+#vp-active-vendor-id-fld option {}
+#vp-active-vendor-id-fld option[data-minimal] {color: green; font-weight: bold;}
+#vp-active-vendor-id-fld option[data-minimal]:active {color: green; font-weight: bold;}
+/*#vp-active-vendor-id option[disabled] {display:none;}
+#vp-active-vendor-id {display:none;}*/
+
+.panel-body {position:relative;}
+.thumbnail {position:absolute; top: 0px; right:0px;}

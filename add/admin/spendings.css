@@ -1,0 +1,24 @@
+#orders-list .filter {display:none;}
+#orders-table tr th:first-child, 
+#orders-table tr :nth-child(2),
+#orders-table tr :nth-child(5),
+#orders-table tr th:last-child {text-align:center;}
+
+
+
+#orders-table tr td:first-child,
+#orders-table tr td:last-child {text-align:right;}
+
+
+#breakdown-tbl tr :nth-child(2) {text-align:center;}
+#breakdown-tbl tr th:last-child, #breakdown-tbl tr td:last-child {text-align:right;}
+
+.panel-stats .panel-heading .btn {line-height:14px;}
+
+#stats-form .fld span.form-control-static {line-height:34px; color: #888;}
+
+.panel-stats .product-prices .table tr {background:transparent!Important;}
+.panel-stats .product-prices .table tr td:first-child {width:100px;}
+.panel-stats .product-prices .table tr td:not(:first-child) {text-align: left;}
+
+.panel.panel-stats.panel-info .panel-body .product-prices:first-child {margin-top:0px;}

@@ -1,0 +1,66 @@
+<header>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 style="color:lightgray">
+                    <a id="main-logo" href="<?=ADMIN?>"><?=SITE_NAME?> Admin</a>
+                </h1>
+                <span style="color:#FFF"><?=$_SESSION['companyLong'] ?></span>
+            </div>
+            <div class="col-sm-6 text-right">
+                <span class="fa fa-user"></span>
+                
+<span><?= AppModel::$admin["waaUsername"] === "admin" ? "" : AppModel::$admin["waaUsername"] ?></span>
+                <?php
+                $role = RoleHelper::currentRole();
+                if ($role === 'admin') {
+                    echo '<span style="background:#e74c3c; color:#fff; padding:2px 8px; border-radius:3px; font-size:0.8em;">Admin</span>';
+                } elseif ($role === 'hr_manager') {
+                    echo '<span style="background:#f39c12; color:#fff; padding:2px 8px; border-radius:3px; font-size:0.8em;">HR Manager</span>';
+                } elseif ($role === 'interviewer') {
+                    echo '<span style="background:#3498db; color:#fff; padding:2px 8px; border-radius:3px; font-size:0.8em;">Interviewer</span>';
+                }
+                ?>
+                |
+                <a id="logout-lnk" href="<?= (intval(AppModel::$admin['waaAFID']) > 0 ? WP.'sign-out?from-admin=true' : ADMIN.'logout') ?>">
+                    <span class="fa fa-sign-out"></span><span>Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <?php
+        $q = "SELECT * FROM timeclock_change_requests WHERE tcrState='pending'";
+        $res = db::PrepareLoad($q);
+        if ($res === false) $res = array();
+        if (count($res) > 0) {
+            echo '<span id="timeclock_request_span" 
+                        title="There are pending timeclock correction requests.">
+                  <a style="opacity:1;font-size:1em;color:red;cursor:pointer;" 
+                     href="employees?to_do=tsr">
+                  <span style="color:red;font-size:1.5em">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;
+                  </span>
+                  There are pending timeclock correction requests. Click here to view >>
+                  </a></span>';
+        }
+        ?>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <div id="menu">
+            <ul class="top-level-menu">
+                <?php
+                echo $v["page-nav"];
+                ?>
+            </ul>
+        </div>
+
+        <div id="main-nav">
+            <div id="sub-nav">
+                <ul><?= $v["page-sub"] ?></ul>
+            </div>
+        </div>
+    </div>
+</div>

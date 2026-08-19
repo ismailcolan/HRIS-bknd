@@ -1,0 +1,93 @@
+.fld {line-height:30px; margin:5px 0px; display:inline-block; vertical-align:top; margin-right:-1em;}
+.fld.right {min-width:1%;}
+label {display:inline-block; width:20%; font-weight:400;vertical-align:top; margin-bottom:0px;}
+label span[title="Required field"] {color:red; cursor:help;}
+input, select, textarea, button {display:inline-block; width:198px; line-height:28px; margin-right:10px;}
+select {width:188px;}
+input[type="checkbox"],input[type="file"] {width:auto;}
+input[type="file"] {width:auto; display:inline-block; border-color:transparent; padding:0px;}
+input[type="file"].error {border-color:red;}
+input, select {/* border: 1px solid #000; */ height:30px;}
+input[readonly]:not(.calendar-fld), select[readonly]:not(.calendar-fld) {border: 1px solid #009; color:#009}
+input[disabled], select[disabled] {opacity:.7}
+textarea {/* border: 1px solid #000; */ line-height:1.3em;}
+input {padding:0px 5px; width:188px;}
+.error {border:1px solid red;}
+.err {display:inline-block; color:red; min-width:30%; vertical-align:top; font-size:.875em; line-height:1.15em; padding-top:5px;}
+.err:empty {display:none;}
+.blink {-webkit-animation: blink .8s; /* Chrome, Safari, Opera */ animation: blink .8s}
+/* Chrome, Safari, Opera */ @-webkit-keyframes blink { from {opacity: 0;} to {opacity: 100;} }
+/* Standard syntax */ @keyframes blink { from {opacity: 0;} to {opacity: 100;} }
+.fadeout {-webkit-animation: fadeout .8s; /* Chrome, Safari, Opera */ animation: fadeout .8s}
+/* Chrome, Safari, Opera */ @-webkit-keyframes fadeout { from {opacity: 100;} to {opacity: 0;} }
+/* Standard syntax */ @keyframes fadeout { from {opacity: 100;} to {opacity: 0;} }
+
+button {line-height:26px;}
+button[type="submit"] {width: 135px;}
+button[name="save-btn"] {margin-right: 5px;}
+
+/*.form-panel {position:relative; top:-1px; padding:20px 0px; border:1px solid #f0f0f0;}*/
+    .html-b .form-panel {border-color:1px solid #333;}
+/* input:focus, textarea:focus {box-shadow: 0px 2px 4px #888888; outline:0px;} */
+input[type="checkbox"]:focus {box-shadow:none;}
+
+.inp-img-after-message::before, .inp-img-iframe-message::before, .inp-img-preview-lnk::before {content: ''; display:block;}
+.inp-img-after-message:empty, .inp-img-iframe-message:empty {display:none;}
+
+.fld span.img-delete {display:inline-block; margin-left: 20px; vertical-align:top}
+.fld span.img-delete input {transform:scale(1.25,1.25)}
+.fld span.img-delete label {float:right; width:auto; padding-left:5px; padding-top:2px;}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+/*==================================================
+=            Bootstrap 3 Media Queries             =
+
+
+
+
+==================================================*/
+    /*==========  Mobile First Method  ==========*/
+
+
+    /* Custom, iPhone Retina */ 
+    @media only screen and (min-width : 320px) {
+        .fld.flex {display:flex; flex-wrap:wrap; margin-right:0px; }
+        .fld.flex.width-50pc {float:left; box-sizing:border-box; width:100%;}
+        .fld.flex .err {flex-basis: 100%; padding-left: 120px;}
+        .fld.flex.space-right {padding-right:50px;}
+        .fld.flex > input, .fld.flex > textarea, .fld.flex > select, .fld.flex > .cke {flex-grow:1; width:auto; margin-right:0px;}
+    }
+
+
+    /* Extra Small Devices, Phones */ 
+    @media only screen and (min-width : 480px) {
+    }
+
+
+    /* Small Devices, Tablets */
+    @media only screen and (min-width : 768px) {
+        .fld.flex.width-50pc {float:left; box-sizing:border-box; width:50%;}
+        .fld.width-50pc.flex.first {padding-right:20px; clear:left;}
+        .fld.flex label {display:block;}
+    }
+
+
+    /* Medium Devices, Desktops */
+    @media only screen and (min-width : 992px) {
+    }
+
+    /* Large Devices, Wide Screens */
+    @media only screen and (min-width : 1200px) {
+    }

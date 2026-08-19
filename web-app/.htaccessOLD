@@ -1,0 +1,88 @@
+RewriteEngine On
+#RewriteBase /
+#SetEnvIf Host ^mms\.maidenlanemedical\. require_auth=true
+
+######### Site pass protection (for dev phase) START
+
+   AuthUserFile /home/vg012web01/89/66/2026689/web/mms/.htpasswd
+   AuthName "RESTRICTED AREA"
+   AuthType Basic
+   Require valid-user
+   Order Allow,Deny
+   Deny from env=require_auth
+   Allow from all
+   #SetEnvIf Request_URI "(/cron-weekly)$" url1
+   #SetEnvIf Request_URI "(/cron-daily)$" url2
+   #Allow from env=url1
+   #Allow from env=url2
+   Satisfy any
+######### Site pass protection (for dev phase) END
+
+######### Non-WWW to WWW redirect START <<<
+#RewriteCond %{HTTP_HOST} !^[0-9]{1,3}\.
+#RewriteCond %{HTTP_HOST} !metavisia\.com$
+#RewriteCond %{HTTP_HOST} !^www [NC]
+#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L] 
+######### Non-WWW to WWW redirect >>> END
+
+######### http to https redirect START <<<
+#RewriteCond %{HTTP_HOST} ^www\.%{HTTP_HOST}$
+#RewriteCond %{SERVER_PORT} 80
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+######### http to https redirect >>> END
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# ---------------------------------------------
+    RewriteRule ^web-app/(.*)$ http://%{SERVER_NAME} [R=301,L]
+    RewriteRule ^admin$ admin/ [R=301,L]
+    RewriteRule ^(add|img)($|/) [R=301,L]
+    RewriteRule ^docs/(.*)$ add/docs/$1 [R=301,L]
+
+    #Index (home/logout/change-pass/login-recover)
+    RewriteRule ^(|)($|/) web-app-router.php?front-file=front-home&rq=$1 [L,QSA]
+
+    #Orders (orders/pending-orders/backorders/complete-roders/shopping-cart)
+	RewriteRule ^(job-details)($|/) web-app-router.php?front-file=job-details&rq=$1 [L,QSA]
+    RewriteRule ^(application-form)($|/) web-app-router.php?front-file=front-apply&rq=$1 [L,QSA]
+    RewriteRule ^(my-profile)($|/) profile?mode=myprofile [QSA]
+	
+    RewriteRule ^(profile|login-recover|sign-out|change-password|view-emp-iammanager)($|/) web-app-router.php?front-file=front-profile&rq=$1 [L,QSA]
+    RewriteRule ^(jobs)($|/) web-app-router.php?front-file=front-job&rq=$1 [L,QSA]
+    RewriteRule ^(employees)($|/) web-app-router.php?front-file=front-employee&rq=$1 [L,QSA]
+	RewriteRule ^(view-emp-iammanager.json)($|/) web-app-router.php?front-file=front-view-emp-iammanager&rq=$1 [L,QSA]
+	RewriteRule ^(front-file_request)($|/) web-app-router.php?front-file=front-view-front-file_request&rq=$1 [L,QSA]
+	
+	RewriteRule ^(filecategories.json)($|/) web-app-router.php?front-file=filecategories&rq=$1 [L,QSA]
+
+    RewriteRule ^(onboarding-tasks)($|/) web-app-router.php?front-file=front-onboarding&rq=$1 [L,QSA]
+	RewriteRule ^(payroll)($|/) web-app-router.php?front-file=front-payroll&rq=$1 [L,QSA]
+    RewriteRule ^(credentialings)($|/) web-app-router.php?front-file=front-credentialing&rq=$1 [L,QSA]
+    RewriteRule ^(announcements)($|/) web-app-router.php?front-file=front-announcements&rq=$1 [L,QSA]
+    RewriteRule ^(calendar)($|/) web-app-router.php?front-file=front-calendar&rq=$1 [L,QSA]
+    RewriteRule ^(resources)($|/) web-app-router.php?front-file=front-resources&rq=$1 [L,QSA]
+	RewriteRule ^(my_files)($|/) web-app-router.php?front-file=front-my_files&rq=$1 [L,QSA]
+	RewriteRule ^(file_request)($|/) web-app-router.php?front-file=front-file_request&rq=$1 [L,QSA]
+	
+
+    #Cron
+    #Superhosting.bg need a phisical file to be executed, so we use cron-superhosting-weekly-run.php to setup the cron
+    #on dev host it can be called just with /cron-weekly 
+    RewriteRule ^cron((-)(daily|weekly|overdue|onboarding|credentialing|test))(|.php)$ web-app-router.php?front-file=cron&request=$3
+
+    RewriteRule ^cvs/([0-9]+)/(.*)$ web-app-router.php?front-file=cvs&cvid=$1&cvname=$2
+    RewriteRule ^resource/([0-9]+)/(.*)$ web-app-router.php?front-file=resource&resid=$1&resname=$2
+	
+	
+
+    #category
+    RewriteCond %{REQUEST_URI} !(add|css|js|json|web-app|phpdoc|ico)($|/)
+    RewriteRule ^(.*)($|/) web-app-router.php?front-file=404&rq=$1 [L,QSA,NC]
+    
+    #Page
+    #RewriteRule ^(Contact-Us|About-Us|Legal-Forms|Privacy-Policy|Terms-of-Use|Legal-Topics)($|/) web-app-router.php?front-file=front-page&page-url=$1 [QSA,L,NC]
+    #RewriteCond %{REQUEST_URI} !(add|css|js|json|web-app|phpdoc|ico)($|/)
+    #RewriteRule ^(.*)($|/) web-app-router.php?front-file=front-page&page-url=$1 [QSA,L,NC]
+
+# ---------------------------------------------

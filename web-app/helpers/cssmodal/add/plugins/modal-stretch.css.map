@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";;;;;;;;;AAMC,oCAAa;EACZ,GAAG,EAAE,GAAG;EACR,UAAU,EAAE,GAAG;AAGhB,sCAAe;EACd,UAAU,EAAE,eAAe;AAG5B,0CAAmB;EAClB,GAAG,EAAE,GAAG;EACR,UAAU,EAAE,KAAK;AAGlB,mCAAuD;EACtD,oCAAa;IACZ,GAAG,EAAE,CAAC;EAGP,0CAAmB;IAClB,UAAU,EAAE,CAAC",
+"sources": ["modal-stretch.scss"],
+"names": [],
+"file": "modal-stretch.css"
+}

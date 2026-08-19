@@ -1,0 +1,10 @@
+.inptags.flex .fld-input {flex:1} 
+.inptags .fld-input {line-height:100%;}
+.inptags textarea {height:30px; width:100%; line-height:28px; padding:0px 5px; margin-right:0px;}
+.inptags .fld-input .textarea-after {font-size:.875em; color:#999; height:16px; top:0px;}
+.inptags select {display:none;}
+.inptags span a {line-height:100%; background:#eee;}
+.inptags span i {cursor:pointer;}
+.inptags .valid-tags, .inptags .invalid-tags {display:block; clear:both; width:100%; line-height:20px; margin-top: 5px;}
+.valid-tags span, .invalid-tags span {display:inline-block; background:#eee; padding: 1px 5px; margin:0px 5px 5px 0px; border:1px solid #aaa; border-radius:1px;}
+.invalid-tags span {color:red;}

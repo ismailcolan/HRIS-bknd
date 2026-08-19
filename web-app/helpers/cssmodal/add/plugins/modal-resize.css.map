@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";;;;;;;;;;AAqCA,kBAAmB;EAClB,OAAO,EAAE,KAAK;EACd,MAAM,EAAE,MAAM",
+"sources": ["modal-resize.scss"],
+"names": [],
+"file": "modal-resize.css"
+}

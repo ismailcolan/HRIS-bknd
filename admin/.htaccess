@@ -1,0 +1,28 @@
+RewriteEngine On
+
+######### Non-WWW to WWW redirect START
+#RewriteCond %{HTTP_HOST} !(^192.168.1)
+#RewriteCond %{HTTP_HOST} !metavisia\.com$
+#RewriteCond %{HTTP_HOST} !^www\.
+#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/admin/$1 [L,R=301]
+######### Non-WWW to WWW redirect END
+
+######### http to https redirect START <<<
+RewriteCond %{HTTP_HOST} www\.attorneys\.org
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/admin/$1 [L,R=301]
+######### http to https redirect >>> END
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+
+
+
+
+#Rmove trailing slash ending from urls
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ ../admin/$1 [L,R=301]
+
+DirectoryIndex web-app-router.php
+RewriteRule ^(.*)$ web-app-router.php?rq=$1 [L,QSA]

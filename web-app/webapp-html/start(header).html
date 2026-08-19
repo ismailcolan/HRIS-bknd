@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"-->
+    <title><?=@$v["title"]?></title>
+<?=(!is_null(@$v["description"]) ?   ("    <meta name=\"description\" content=\"".@$v["description"]."\"/>\n")  :"")?>
+<?=(!is_null(@$v["keywords"]) ?   ("    <meta name=\"keywords\" content=\"".@$v["keywords"]."\"/>\n")  :"")?>
+	<meta name="author" content="">
+	<meta name="robots" content="all">
+	<meta name="robots" content="noarchive">
+	<meta name="revisit-after" content="3 days">
+    <link rel="shortcut icon" href="<?=ADD_IMG?>favicon.ico" title="Ico by http://www.iconsmind.com" rel="http://www.iconarchive.com/show/outline-icons-by-iconsmind.html">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+	<!-- Bootstrap -->
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	
+	
+	<link href="<?=ADD_CSS?>base.css?_v=<?=VER?>" rel="stylesheet">
+	<link href="<?=ADD?>helpers/form/add/form.css?_v=<?=VER?>" rel="stylesheet">
+	<script type="text/javascript" src="<?=ADD_JS?>base.js?_v=<?=VER?>"></script>
+    <script type="text/javascript" src="<?=ADD_JS?>search.js?_v=<?=VER?>" defer></script>
+	<script src="<?=ADD_CSS?>bootstrap-datepicker.min.js"></script>
+	
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+   <?=isset($v["other"])?$v["other"]:null?>
+
+
+</head>
+<body>
+<script> 
+var USER_DATE = '<?=USER_DATE?>';
+var USER_DATE_EXAMPLE = '<?=USER_DATE_EXAMPLE?>';
+var PROTOCOL = '<?=PROTOCOL?>';
+</script>
+
+<!-- Modal -->
+	<div class="modal fade" id="alertModal" role="dialog" style="z-index:9999999">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" id="msg_title">Alert</h4>
+				</div>
+				<div class="modal-body" >
+				<p id="alert_text">This is a small modal.</p>
+				</div>
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="alertScreen" role="dialog" style="z-index:9999999">
+		<div class="modal-dialog" style="width:98vw;height:70vh;">
+			<div class="modal-content" style="text-align:center">
+				<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" id="msg_title">Sign document</h4>
+				</div>
+			
+				<iframe style="width:96vw;height:70vh;" id="screenIframe" src=""></iframe>
+			
+				<div class="modal-footer" style="text-align:center">
+				<button onclick="sign_it()" type="button" id="sign_doc_button" class="btn btn-primary" data-dismiss="modal">Sign it</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<?php
+/********
+	db::SwitchToMain();
+	$qry='SELECT * FROM companies WHERE comActive = "Yes" ORDER BY comName ASC';
+	$res = db::PrepareLoad($qry);
+	if($res === false) $res=array();
+	$companies=array();
+	foreach ($res as $k=>$r){
+		$companies[$r['comID']]=$r['comName'];
+	}
+*******/
+?>	
+	<div class="page-wrap">
+        <header>
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-2 col-left">
+						&nbsp;
+					</div>
+					<style>
+					.logo {max-width:100px;max-height:100px;margin-top:10px}
+					</style>
+					<div class="col-xs-10 col-right" style="position:relative;text-align:center">
+					<?php 
+					
+					if (isset($_SESSION['customerID'])){
+						if (isset(AppModel::$usr["afCompany"])){
+							$file='add/images/companyLogo'.$_SESSION['customerID'].'_'.AppModel::$usr["afCompany"].'.png';
+						    if (file_exists(FS_ROOT.$file))
+							echo '<img class="logo" src="'.$file.'?r='.rand(0, 9999).'" onclick="location.assign(\''.WP.'\')">';
+							
+						}
+						else {
+						    $file = 'add/images/customerLogo'.$_SESSION['customerID'].'.png';
+							if(file_exists(FS_ROOT.$file))
+							echo '<img class="logo" src="'.$file.'?r='.rand(0, 9999).'" onclick="location.assign(\''.WP.'\')">';
+						}
+					}
+					?>
+						<!-- <div class2="line1" style="border:1px solid red"><!--Human Road-->
+						<div style="position:absolute;left:27px;top:25px;">
+						<img style="" src="/add/images/logoHR.png" >
+						<!--</div>-->
+						<div class="line2" style="text-align:left;margin-left:3px;"> Human Resource Information System</div>
+						</div>
+						<!--</div>-->
+				</div><!-- /.row -->
+			</div>
+		</header>
+        <section>
+            <div class="container" style="padding:0">
+				<div class="row" style="padding:0;margin:0;">

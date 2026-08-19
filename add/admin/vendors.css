@@ -1,0 +1,13 @@
+table#vendors-table tr th:first-child,
+table#vendors-table tr :nth-child(6),
+table#vendors-table tr th:nth-child(7),
+table#vendors-table tr th:nth-child(8),
+table#vendors-table tr th:last-child {text-align:center;}
+
+table#vendors-table tr td:first-child,
+table#vendors-table tr td:nth-child(6),
+table#vendors-table tr td:nth-child(7),
+table#vendors-table tr td:nth-child(8),
+table#vendors-table tr td:last-child {text-align:right;}
+table#vendors-table tr td:not(:last-child ) a + a {margin-left: 5px;}
+table#vendors-table tr td[colspan] {text-align:center; font-style:italic}

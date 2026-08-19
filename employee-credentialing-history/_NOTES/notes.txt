@@ -1,0 +1,39 @@
+
+moqt user ID: ecafid: 1487
+
+SEGA:
+	- set prawilnata direktoriq za kopirane
+
+PODGOTOVKA:
+
+	- da kacha DB table emplpoyee_credentialing_backup
+		da kopiram w neq DB Table employee_credentialing
+
+	- da kacha moq script zaedno s poddirektoriite - credentialing files, CSS i dr.
+		da kopiram credentialing files w moqta direktoriq
+
+UPDATE GLAVNIQ SAJT:
+
+	- da wkljucha pokazvaneto na greshki online
+
+	- pri kachvame na file w glawniq sajt, da se izwikwa moq update.php
+
+	- Na glawniq sajt, kydeto admina gleda credentialings na user, da ima link:
+		CREDENTIALNGS BACKUP (includes all credentialing items of the employee, incl. deleted ones)
+		koeto da e link kym moq script
+
+	- Naj-otgore da pishe, che do edi-koq si data nqkoi credentialings mozhe da lipsvat
+
+AUTHORIZATION:
+
+	- authorization na VSICHKITE moi scriptove - da proweqrwam che usera idwa ot admina i e lognat tam:
+
+	- da zashtitq moqta direktoriq s credentialing files da ne mozhe da se kopira
+	- PREDI launch da kopiram otnovo nachisto DB i direktoriqta s fajlove
+
+FINAL CHECKS:
+	- da oprawq CSS na moite stranici
+	- da testwam wseki link dali raboti
+	- da testvam download linkovete dali rabotqt
+	- dali se otwqrwam OK kopiranite files i records
+

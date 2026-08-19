@@ -1,0 +1,78 @@
+body{
+    background-color: #f9f9f9;
+}
+
+.login-holder {
+	padding-top:1%;
+}
+.login-box {
+    background: #eaeaea;
+	border-radius: 3px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	border-bottom: 4px solid #0088cc;
+}
+.login-inner {
+    padding:10px;
+	font-size: 15px;
+	line-height: 1.2em;
+    color: #161616;
+}
+.btn {
+    padding: 0;
+    font-size: 16px;
+    line-height: 40px;
+    border: 0 solid transparent;
+    border-bottom-width: 2px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.btn.btn-primary {
+    background-color: #0088cc;
+    border-bottom-color: #2c3744;
+    color: white;
+}
+.btn.btn-primary:hover, 
+.btn.btn-primary:focus, 
+.btn.btn-primary:active {
+    background-color: #00aaff;
+    border-bottom-color: #586e88;
+}
+
+
+@media (min-width: 480px) {
+	.login-inner {
+		padding:20px;
+	}
+	
+}
+@media (orientation: portrait) {
+	.login-holder {
+		padding-top:15%;
+	}
+}
+@media (min-width: 768px) {
+	.login-inner {
+		padding:40px;
+	}
+	.login-holder {
+		padding-top:15%;
+	}
+}
+@media  (min-width: 768px) and (orientation: portrait) {
+	.login-holder {
+		padding-top:35%;
+	}
+}
+@media (min-width: 992px) {
+
+}
+@media (min-width: 1024px) {
+
+}
+@media (min-width: 1200px) {
+
+}
+@media (min-width: 1920px) {
+
+}

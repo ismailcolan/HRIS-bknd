@@ -1,0 +1,23 @@
+# Logs
+*.log
+error_log
+php.error.log
+APP_LOGSphp.error.log
+web-app/webapp-logs/
+
+# Customer uploads and generated files (kept on the server, not in git)
+add/uploads/
+add/customer*/uploads/
+add/customer*/form-photo/
+credentialings-data-after-processing.txt
+
+# Secrets
+.htpasswd
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~

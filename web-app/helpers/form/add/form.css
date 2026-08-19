@@ -1,0 +1,37 @@
+.fld:not(.form-group) {margin-bottom:15px;}
+.fld label span[title="Required field"] {color:red; cursor:help;}
+.fld:not(.form-group) label:first-child {display:block; font-weight:normal;}
+.error {border:1px solid red;}
+.err {display:inline-block; color:red;  vertical-align:top; padding-top:5px; display: block; clear: both;}
+.fld:not(.form-group) .err {display:inline-block; flex: 0 1 100%; text-align:right;}
+.err:empty {display:none;}
+
+/*.form-inline .form-group.fld {display:inline-block;}
+.form-inline .form-group.fld label:first-child {display:inline;}
+.form-inline .form-group.fld :not(label) {display:inline;}*/
+
+@media screen and (min-width: 320px) {
+    .fld:not(.form-group) {display:flex; flex-wrap: wrap;}
+    .fld:not(.form-group) label:first-child {display:inline-block;flex: 0 0 120px;}
+    .fld:not(.form-group) *:not(label):not(button):not([type="submit"]) {flex-grow: 1;}
+}
+
+label.check-label {width:auto; margin-right: 20px; line-height:38px;}
+/* input[type="checkbox"]:first-of-type {
+	margin-left: 15px;
+} */
+.checkbox label.control-label, .radio label.control-label {
+	font-weight: 700;
+}
+.checkbox-group label,
+.radio-group label {
+	margin-bottom: 10px;
+    line-height: 23px;
+}
+.checkbox.form-group,
+.radio.form-group {
+	margin-bottom: 15px;
+}
+.fld input[type="file"] {
+    height: auto;
+}
