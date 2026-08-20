@@ -89,6 +89,7 @@ class App_AdminModel extends AppModel {
             $sub["positions"] = array("Active", array("title"=>"Active positions list"));
             $trigger["sub"]["position"]="positions";
             $trigger["sub"]["position-details"]="positions";
+            $trigger["sub"]["position-assignments"]="positions";
             $sub["inactive-positions"] = array("Inactive", array("title"=>"Inactive positions list"));
         }
 

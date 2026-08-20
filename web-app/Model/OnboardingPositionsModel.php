@@ -56,6 +56,22 @@ class OnboardingPositionsModel extends AppModel {
         return $data;
     }
 
+    public static function LoadPositionOffboardings($pID) {
+        $pid = intval($pID);
+        $q = "select * from `".self::$dt['tbl']."`
+              left join `onboarding_tasks` on `otID` = `otpOTID` 
+              where otType='off' AND `otActive`= 'Yes' and `otpPID` = ".$pid;
+        $data = db::PrepareLoad($q);
+        if($data === false) {
+            $data = [];
+        } else {
+            foreach ($data as &$item) {
+                $item["otDescription"] = htmlspecialchars($item["otDescription"]);
+            }
+        }
+        return $data;
+    }
+
     public static function LoadAsKeyValueArray($afID) {
         $data = self::LoadOnboardingPositions($afID);
         $result = [];
@@ -74,6 +90,27 @@ class OnboardingPositionsModel extends AppModel {
         if(empty($pIDs)) { $pIDs = []; }
         foreach ($pIDs as $pid) {
             $pid = intval($pid);
+            $q[] = "insert into `".self::$dt['tbl']."` (`otpOTID`, `otpPID`) values($otid, $pid)";
+        }
+        return db::Save($q);
+    }
+
+    public static function SavePositionTasks($pID, $otIDs = [], $type = 'on') {
+        $pid = intval($pID);
+        $type = ($type === 'off') ? 'off' : 'on';
+
+        $q = "delete from `".self::$dt['tbl']."`
+              where `otpPID` = ".$pid."
+              and `otpOTID` in (select `otID` from `onboarding_tasks` where `otType` = '".$type."')";
+        db::SQL($q);
+
+        $q = [];
+        if(empty($otIDs)) { $otIDs = []; }
+        foreach ($otIDs as $otid) {
+            $otid = intval($otid);
+            if ($otid <= 0) {
+                continue;
+            }
             $q[] = "insert into `".self::$dt['tbl']."` (`otpOTID`, `otpPID`) values($otid, $pid)";
         }
         return db::Save($q);
