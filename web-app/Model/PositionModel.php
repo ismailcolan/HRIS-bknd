@@ -184,11 +184,6 @@ class PositionModel extends AppModel
         } else if ($C::$rq === "summary") {
             $title = (filter_has_var(INPUT_GET, "id") ? $C::$data[self::$dt["pfx"] . "Name"] : cf::end(__METHOD__));
             $links = AccessModel::AdminPageHeaderLnk($C);
-        } else if ($C::$rq === "assignments") {
-            $title = "Credentialing, Onboarding & Off-boarding";
-            if (filter_has_var(INPUT_GET, "id") && !empty($C::$data[self::$dt["pfx"] . "Name"])) {
-                $title .= " — Position: " . $C::$data[self::$dt["pfx"] . "Name"];
-            }
         } else {
             $title = (filter_has_var(INPUT_GET, "id") ? "Editing: " . $C::$data[self::$dt["pfx"] . "Name"] : "Add " . $C::$pg[$C::$rq]["title"]);
         }

@@ -50,7 +50,6 @@ class AppModel extends db
             $triggers["inactive-positions"] = "positions";
             $triggers["position"] = "positions";
             $triggers["position-details"] = "positions";
-            $triggers["position-assignments"] = "positions";
 
             $triggers["inactive-skills"] = "skills";
             $triggers["skill"] = "skills";

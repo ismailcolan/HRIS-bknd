@@ -4,7 +4,7 @@ class PageAdmin extends Page {
 
     protected static $timeStart = null, 
     $pageToControllerMethods = array("All","AllForManager","DetailsForManager","DetailsSaveForManager","Summary","ItemToBin","Delete","DetailsSave",
-            "Details","Reactivate", "Answers", "Assignments", "AssignmentsSave", "AssignmentsCopy", "SetPassword", "PasswordSave", "CheckForUndoOnboarding", "uploadResourceFile", "addResourceLink", 
+            "Details","Reactivate", "Answers", "SetPassword", "PasswordSave", "CheckForUndoOnboarding", "uploadResourceFile", "addResourceLink", 
             "deleteFile","uploadFile","AllApplications","DeleteApplication","AdminMassTask",
 			  "deleteFilesFromCategory","moveFilesToCategory",
 			  "SetFile","Report","TerminateEmployee","DaysOffEmployee","UndoSignDocEmployee","UndoTerminateEmployee","TerminateTodayEmployees",
@@ -73,7 +73,7 @@ class PageAdmin extends Page {
 
         parent::Header($templates, $v);
 
-        if(!is_null(($ctr=static::CONTROLLER)) && in_array($ctr::$rq, array("details","summary","answers","assignments")) && isset($ctr::$id) && empty($ctr::$data)){
+        if(!is_null(($ctr=static::CONTROLLER)) && in_array($ctr::$rq, array("details","summary","answers")) && isset($ctr::$id) && empty($ctr::$data)){
             //Summary and details pages cannot be loaded with inaccurate ID.
 			
             $templates[] = "admin/app-panel-wrong-id";
