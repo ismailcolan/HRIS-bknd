@@ -42,7 +42,7 @@ class Page {
 		
     }
 
-    private final function setHeadVars(&$v){
+    private function setHeadVars(&$v){
         //lang::prepare();
         form::codeStyle(true, 1);
             

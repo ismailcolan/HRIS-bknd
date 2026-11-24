@@ -55,7 +55,7 @@ class RCategoriesView extends AppView
     final static function Details($data, $pg, $lbls, $list)
     {       
         $btnLabel = "Save";
-        if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "alert")  {
+        if(cf::requestStr(INPUT_GET, "cmd") === "alert")  {
             msg::put("You cannot delete a category with resources in it. Please first delete or move resources.", "error");    
             $btnLabel = "Delete";        
         }

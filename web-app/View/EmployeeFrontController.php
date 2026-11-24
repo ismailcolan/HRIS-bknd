@@ -21,12 +21,12 @@ class EmployeeFrontController extends AppController
         $conds = array("afActive='Hired' AND afID > 1");
 
         if(filter_has_var(INPUT_GET, "firstname")) {
-            $val = filter_input(INPUT_GET, "firstname", FILTER_SANITIZE_STRING);
+            $val = cf::requestStr(INPUT_GET, "firstname");
             if(!empty($val)) { $conds[] = "afFirstName like '%{$val}%'"; }
         }
 
         if(filter_has_var(INPUT_GET, "lastname")) {
-            $val = filter_input(INPUT_GET, "lastname", FILTER_SANITIZE_STRING);
+            $val = cf::requestStr(INPUT_GET, "lastname");
             if(!empty($val)) { $conds[] = "afLastName like '%{$val}%'"; }
         }
 

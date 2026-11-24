@@ -506,3 +506,24 @@ function _checkRegExp(regx, value) {
             return(regx.test(value));
     };
 };
+
+/** Client-side user date (n/j/Y or m/d/Y) — pairs with val::validDate on the server */
+function validUserDate(element) {
+    if (!element || !element.value) {
+        return true;
+    }
+    var v = String(element.value).replace(/^\s+|\s+$/g, "");
+    if (!v) {
+        return true;
+    }
+    var re = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/(\d{4})$/;
+    if (!re.test(v)) {
+        return false;
+    }
+    var parts = v.split("/");
+    var month = parseInt(parts[0], 10);
+    var day = parseInt(parts[1], 10);
+    var year = parseInt(parts[2], 10);
+    var d = new Date(year, month - 1, day);
+    return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
+}

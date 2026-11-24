@@ -218,7 +218,7 @@ class WebappAdminModel extends AppModel
 
     //     if (!isset(WebappAdminController::$id)) {
 
-    //         $emailForSalt = filter_input(INPUT_POST, "waaEmail", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+    //         $emailForSalt = cf::requestStr(INPUT_POST, "waaEmail");
 
     //         $salt = cf::saltAnWord($emailForSalt);
 
@@ -237,7 +237,7 @@ class WebappAdminModel extends AppModel
     $qList = parent::saveQueries($qListSubmitted);
 
     if (!isset(WebappAdminController::$id)) {
-        $emailForSalt = filter_input(INPUT_POST, "waaEmail", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $emailForSalt = cf::requestStr(INPUT_POST, "waaEmail");
         $salt  = cf::saltAnWord($emailForSalt);
         $token = cf::hashTokenByPassAndSalt(filter_input(INPUT_POST, "waaPass"), $salt);
         $qList["token"] = "INSERT INTO `webapp_admins_tokens` (`waatID`, `waatSalt`, `waatToken`) 
@@ -346,9 +346,9 @@ class WebappAdminModel extends AppModel
 
     {
 
-        $user = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $user = cf::requestStr(INPUT_POST, "user");
 
-        $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $pass = cf::requestStr(INPUT_POST, "pass");
 
 
 
@@ -423,9 +423,9 @@ class WebappAdminModel extends AppModel
 
     {
 
-        $user = db::EscapeStr(filter_input(INPUT_POST, "email", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
+        $user = db::EscapeStr(cf::requestStr(INPUT_POST, "email"));
 
-        $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $pass = cf::requestStr(INPUT_POST, "pass");
 
 
 

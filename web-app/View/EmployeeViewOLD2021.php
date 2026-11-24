@@ -2294,7 +2294,7 @@ echo '
         return $imgSrc;
     }
 
-    public static function RenderFrontEmployeeList($emplList = [], $totalCnt = 0, $currentPage = 1, $pageSize)
+    public static function RenderFrontEmployeeList($emplList, $totalCnt, $currentPage, $pageSize)
     {
         form::openDiv(array('class' => "content bg-white"));
         form::openDiv(array('class' => "row"));
@@ -2400,7 +2400,7 @@ echo '
         form::closeDiv(array("class" => "row"));
     }
 
-    public static function RenderPager($totalCnt = 1, $currentPage = 1, $pageSize)
+    public static function RenderPager($totalCnt, $currentPage, $pageSize)
     {
         $query = [];
         $fields = ["firstname", "lastname", "position", "office"];

@@ -66,8 +66,8 @@ class TimeClockFrontController extends AppController
 					
 					$date_for = $_POST['date'];
 					
-					$correction =filter_input(INPUT_POST, "correction", FILTER_SANITIZE_STRING);
-					//$reason = filter_input(INPUT_POST, "reason", FILTER_SANITIZE_STRING);
+					$correction =cf::requestStr(INPUT_POST, "correction");
+					//$reason = cf::requestStr(INPUT_POST, "reason");
 					$userID = AppModel::$usr['afID'];
 					
 					$now=date('Y-m-d H:i:s');

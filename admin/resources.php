@@ -51,7 +51,7 @@ if(intval(AppModel::$admin["waaAFID"]) > 0 && !RoleHelper::isHRManager()) {
 
 
 if(filter_has_var(INPUT_GET, "cmd")) {
-    $cmd = filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING);
+    $cmd = cf::requestStr(INPUT_GET, "cmd");
     switch($cmd) {
         case 'addfile':  $adminSection->uploadResourceFile();  break;
         case 'removeFile':  $adminSection->removeResourceFile();  break;
@@ -68,9 +68,9 @@ if(in_array($adminSection::$rq, array("list", "inactive-list"))) {
 } else if($adminSection::$rq === "summary") {
     $adminSection->Summary();
 } else if($adminSection::$rq === "details") {
-    if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "trash") {
+    if(cf::requestStr(INPUT_GET, "cmd")=== "trash") {
         $adminSection->Delete();
-    } else if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "restore") {
+    } else if(cf::requestStr(INPUT_GET, "cmd")=== "restore") {
         $adminSection->Reactivate();
     } else if(filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
         $adminSection->DetailsSave();

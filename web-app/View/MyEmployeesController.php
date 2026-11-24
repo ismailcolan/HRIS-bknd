@@ -117,7 +117,8 @@ class MyEmployeesController extends AppController
 	}
 	
 	public static function DeclineRequest(){
-		$reason=mysql_real_escape_string(strip_tags($_GET['reason']));
+		global $con;
+		$reason=mysqli_real_escape_string($con, $_GET['reason']);
 		$q="UPDATE  vacation_requests  
 			SET 	vrState='declined',
 			vrDeclineReason='{$reason}'

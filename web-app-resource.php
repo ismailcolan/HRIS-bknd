@@ -18,7 +18,7 @@ class ResourceRequest extends PageFront {
 
     public function Execute(){
         $id = intval(filter_input(INPUT_GET, 'resid', FILTER_SANITIZE_NUMBER_INT));
-        $name = filter_input(INPUT_GET, 'resname', FILTER_SANITIZE_STRING);
+        $name = cf::requestStr(INPUT_GET, 'resname');
 
         $rec = db::PrepareLoadSingleRow("select * from resource_items where riID={$id} and riType='File' and riActive='Yes'");
         if($rec === false) {

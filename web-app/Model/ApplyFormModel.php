@@ -229,10 +229,10 @@ class ApplyFormModel extends AppModel {
 		   
 		   if(val::validDate($name)){
 			   
-				$date = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, $name));
-				
-				if($date === false) {
-					$date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, filter_input(INPUT_POST, $name));
+				$date = val::parseUserDate(val::postValue($name));
+				if (!($date instanceof DateTime)) {
+				    val::setError($name, "Invalid format");
+				    return;
 				}
 				
 				if($name === "afNYSMedicalLicenseExpDate" && $validateAsEmployee) {
@@ -268,10 +268,10 @@ class ApplyFormModel extends AppModel {
 				&& 
 				val::validDate('afDateHired', "Invalid Date Hired. Valid Date Hired example: 12/30/1990") 	
 			) {
-                $date = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, $name));
-				   
-                if($date === false) {
-                    $date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, filter_input(INPUT_POST, $name));
+                $date = val::parseUserDate(val::postValue($name));
+                if (!($date instanceof DateTime)) {
+                    val::setError($name, "Invalid format");
+                    return;
                 }
                
                 
@@ -283,10 +283,11 @@ class ApplyFormModel extends AppModel {
 						}
 						
 						/*********  Start and Hired validation ******/
-						 $dateHired = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, 'afDateHired'));
-					    $dateStart = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, 'afStartDate'));
+						 $dateHired = val::parseUserDate($_POST['afDateHired'] ?? '');
+					    $dateStart = val::parseUserDate($_POST['afStartDate'] ?? '');
 						
-					   if ($dateHired->format('Y-m-d') > $dateStart->format('Y-m-d')){
+					   if ($dateHired instanceof DateTime && $dateStart instanceof DateTime
+					       && $dateHired->format('Y-m-d') > $dateStart->format('Y-m-d')){
 						  
 						   val::setError($name, "Start Date cannot be before Date Hired.");
 					   }
@@ -317,14 +318,14 @@ class ApplyFormModel extends AppModel {
 				&& 
 				val::validDate('afStartDate', "Invalid {$lbl}.Valid {$lbl} example: 12/30/1990")
 			) {
-                $date = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, $name));
-				
-				   $startDate = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, 'afStartDate'));
-                if($date === false) {
-                    $date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, filter_input(INPUT_POST, $name));
+                $date = val::parseUserDate(val::postValue($name));
+				   $startDate = val::parseUserDate($_POST['afStartDate'] ?? '');
+                if (!($date instanceof DateTime)) {
+                    val::setError($name, "Invalid format");
+                    return;
                 }
 		 
-				   if ($date->format('Y-m-d') 
+				   if ($startDate instanceof DateTime && $date->format('Y-m-d') 
 					   > $startDate->format('Y-m-d'))
 					   val::setError($name, "Date hired can't be after start date.");
                 
@@ -346,12 +347,11 @@ class ApplyFormModel extends AppModel {
         $lbl = strtolower(self::$fldLbl[$name]);
         if(val::required($name,"Please enter a valid ".self::$fldLbl[$name]." in format [".USER_DATE."]")) {
           
-			if(val::validDate($name, "Invalid {$lbl}.Valid {$lbl} example: 12/30/1990")) {
-				   
-                $date = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, $name));
-				   
-                if($date === false) {
-                    $date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, filter_input(INPUT_POST, $name));
+			if(val::validDate($name, "Invalid {$lbl}. Valid {$lbl} example: 12/30/1990.")) {
+                $date = val::parseUserDate(val::postValue($name));
+                if (!($date instanceof DateTime)) {
+                    val::setError($name, "Invalid {$lbl}. Valid {$lbl} example: 12/30/1990.");
+                    return;
                 }
                 if($name === "afBirthday") {
                     $today     = new DateTime();
@@ -373,8 +373,6 @@ class ApplyFormModel extends AppModel {
 				   
                 self::$postOverrided[$name] = $date->format('Y-m-d');
             }
-			 else val::setError($name, "Invalid format");
-			 //<<<self::$postOverrided['afBirthday'] = $_POST['afBirthday'];
         }
     }
 	
@@ -384,7 +382,7 @@ class ApplyFormModel extends AppModel {
     public static function validateSalary($position, $name = "afDesiredSalary"){
 //<<<<<<<<????
         if($name === "afSalary") {
-            $type = filter_input(INPUT_POST, "afSalaryType", FILTER_SANITIZE_STRING);
+            $type = cf::requestStr(INPUT_POST, "afSalaryType");
             if ($type === "Hourly") {
                 $minSalary = 1;
                 $maxSalary = 999;
@@ -408,7 +406,7 @@ class ApplyFormModel extends AppModel {
         val::required($name, "Please fill out the field.");
         val::regExp($name, "JSVAL_RX_MONEY_COMMAS", "Please use valid number format (1,234.56)");
 
-        $_POST[$name] = str_replace([",", " "], "", filter_input(INPUT_POST, $name));
+        $_POST[$name] = str_replace([",", " "], "", cf::requestStr(INPUT_POST, $name) ?? '');
 
         val::numMin($name, $minSalary, "Invalid salary. Must be greater or equal to ".
 		 number_format($minSalary, 2, ".", ",").".");

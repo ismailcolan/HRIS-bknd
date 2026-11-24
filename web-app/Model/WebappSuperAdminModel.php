@@ -106,7 +106,7 @@ class WebappSuperAdminModel extends AppModel
     {
         $qList = parent::saveQueries($qListSubmitted);
         if (!isset(WebappAdminController::$id)) {
-            $emailForSalt = filter_input(INPUT_POST, "waaEmail", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+            $emailForSalt = cf::requestStr(INPUT_POST, "waaEmail");
             $salt = cf::saltAnWord($emailForSalt);
             $token = cf::hashTokenByPassAndSalt(filter_input(INPUT_POST, "waaPass"), $salt);
             $qList["token"] = "INSERT INTO `webapp_admins_tokens` (`waatID`, `waatSalt`, `waatToken`) VALUES ({---MainID---}, " . db::EscapeStr($salt, true) . ",AES_ENCRYPT(\"" . $token . "\", \"" . WEBAPP_SQL_SECRET_KEY . "\"));";
@@ -160,8 +160,8 @@ class WebappSuperAdminModel extends AppModel
     }*/
     static function LoginProcess()
     {
-        $user = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
-        $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $user = cf::requestStr(INPUT_POST, "user");
+        $pass = cf::requestStr(INPUT_POST, "pass");
 
         $salt = db::PrepareLoadSingleCellValue("SELECT waatSalt FROM webapp_admins_tokens WHERE waatID=(SELECT waaID FROM webapp_admins WHERE waaAFID is null and waaUsername=" . self::EscapeStr($user, true) . ")");
 
@@ -196,8 +196,8 @@ class WebappSuperAdminModel extends AppModel
 
     static function ManagerLoginProcess()
     {
-        $user = db::EscapeStr(filter_input(INPUT_POST, "email", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
-        $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $user = db::EscapeStr(cf::requestStr(INPUT_POST, "email"));
+        $pass = cf::requestStr(INPUT_POST, "pass");
 
         $salt = db::PrepareLoadSingleCellValue("SELECT waatSalt FROM webapp_admins_tokens WHERE waatID=(SELECT waaID FROM webapp_admins WHERE waaUsername=" . self::EscapeStr($user, true) . ")");
 

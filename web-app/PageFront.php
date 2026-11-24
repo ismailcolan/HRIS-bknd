@@ -53,7 +53,7 @@ class PageFront extends Page {
         */
 		
         if(!isset(cf::$rq["ext"]) || empty(cf::$rq["ext"])){
-            if(method_exists($C, "TitleAndMetaTags")) {
+            if (is_string($C) && class_exists($C) && method_exists($C, "TitleAndMetaTags")) {
                 $C::TitleAndMetaTags();
             }
         }

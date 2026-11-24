@@ -20,7 +20,7 @@ class SuperAdminCustomersModel extends AppModel {
 		val::throwServerRunError();
 	}
 	
-	private static function validateEmail($name="cAdminEmail",$label){
+	private static function validateEmail($name,$label){
 		val::required($name, "Please fill out the " . strtolower($label) . ".");
 		val::regExp($name, self::EMAIL_REGEXP, "Please use valid email.");
         val::maxLength($name, 255);
@@ -29,7 +29,7 @@ class SuperAdminCustomersModel extends AppModel {
         val::unique($name, 'customers', 'cID', $id);
 	}
 	
-	private static function validateDB($name = "cDBASE",$label,$type){
+	private static function validateDB($name,$label,$type){
         val::required($name, "Please fill out the " . strtolower($label) . ".");
         val::minLength($name, 2, "Please add at least 2 characters.");
         val::maxLength($name, 50);
@@ -63,7 +63,7 @@ class SuperAdminCustomersModel extends AppModel {
 	
 	
 	
-	private static function validateName($name = "cCustomerName",$label){
+	private static function validateName($name,$label){
         val::required($name, "Please fill out the " . strtolower($label) . ".");
         val::minLength($name, 2, "Please add at least 2 characters.");
         val::maxLength($name, 50);
@@ -71,7 +71,7 @@ class SuperAdminCustomersModel extends AppModel {
         val::unique($name, 'customers', 'cID', $id);
     }
 	
-	private static function validatePass($name = "cPass",$label){
+	private static function validatePass($name,$label){
         val::required($name, "Please fill out the " . strtolower($label) . ".");
         val::minLength($name, 6, "Please add at least 6 characters.");
         val::maxLength($name, 50);

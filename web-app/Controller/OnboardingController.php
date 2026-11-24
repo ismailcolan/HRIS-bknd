@@ -165,7 +165,7 @@ if (isset($_GET['copy']) && intval($_GET['copy']) > 0) {
             } else {
                 $oldTimeFrame = self::$data["otTimeFrameNum"].self::$data["otTimeFrameDim"];
                 $newTimeFrame = filter_input(INPUT_POST, "otTimeFrameNum", FILTER_SANITIZE_NUMBER_INT).
-                    filter_input(INPUT_POST, "otTimeFrameDim", FILTER_SANITIZE_STRING);
+                    cf::requestStr(INPUT_POST, "otTimeFrameDim");
 
                 if($oldTimeFrame != $newTimeFrame) {
                     // EmployeeOnboardingModel::ChangeOnboardingTaskTimeFrame(self::$id,
@@ -173,7 +173,7 @@ if (isset($_GET['copy']) && intval($_GET['copy']) > 0) {
                         self::$data["otTimeFrameNum"],
                         self::$data["otTimeFrameDim"],
                         filter_input(INPUT_POST, "otTimeFrameNum", FILTER_SANITIZE_NUMBER_INT),
-                        filter_input(INPUT_POST, "otTimeFrameDim", FILTER_SANITIZE_STRING));
+                        cf::requestStr(INPUT_POST, "otTimeFrameDim"));
                     // MailController::OnboardingTaskNewTimeFrame(self::$id);
                     MailController::OnboardingTaskNewTimeFrame($newId);
                 }

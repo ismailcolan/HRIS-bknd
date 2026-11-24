@@ -73,12 +73,26 @@ if(in_array($adminSection::$rq, array("all", "pending", "manually-rejected", "au
 } else if($adminSection::$rq === "summary") {
     $adminSection->Summary();
 } else if($adminSection::$rq === "details") {
-    if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "trash") {
+    if(cf::requestStr(INPUT_GET, "cmd") === "trash") {
         $adminSection->Delete();
-    } else if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "restore") {
+    } else if(cf::requestStr(INPUT_GET, "cmd") === "restore") {
         $adminSection->Reactivate();
-    } else if(filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $adminSection->DetailsSave();
+    } else if (
+        filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST"
+        || (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
+    ) {
+        $detailCmd = cf::requestStr(INPUT_GET, "cmd");
+        $postToDetails = in_array($detailCmd, array('save-note', 'update-note', 'assign-interviewers'), true);
+        if (RoleHelper::isInterviewer()) {
+            // Interview notes use dedicated cmd actions handled in ApplicationController::Details()
+            $adminSection->Details();
+        } elseif ($postToDetails) {
+            $adminSection->Details();
+        } else {
+            $adminSection->DetailsSave();
+        }
+    } else if (cf::requestStr(INPUT_GET, "cmd") === "delete-note") {
+        $adminSection->Details();
     } else {
         $adminSection->Details();
     }

@@ -660,7 +660,9 @@ class ApplicationView extends AppView
                     $list["positions"][0] = "Not sure";
                 } else {
                     $missed = PositionModel::dataById($data[$f]);
-                    $list["positions"][$data[$f]] = $missed["pName"];
+                    $list["positions"][$data[$f]] = (is_array($missed) && isset($missed["pName"]))
+                        ? $missed["pName"]
+                        : "Unknown position (#{$data[$f]})";
                 }
             }
             $list["positions"] = [$data[$f] => $list["positions"][$data[$f]]];

@@ -54,7 +54,7 @@ class QuestionController extends AppController {
 
                 $i = 1; $data = [];
                 while(filter_has_var(INPUT_POST, "ansName".$i)) {
-                    $name = filter_input(INPUT_POST, "ansName".$i, FILTER_SANITIZE_STRING);
+                    $name = cf::requestStr(INPUT_POST, "ansName" . $i);
                     if(filter_has_var(INPUT_POST, "ansPositions".$i)) {
                         $pos = filter_input(INPUT_POST, "ansPositions".$i, FILTER_DEFAULT, FILTER_FORCE_ARRAY);
                         if($pos === false) $pos = [];

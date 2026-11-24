@@ -198,17 +198,17 @@ class ApplicationView extends AppView
    
 					  }
 					   
-                    $cells["afDepartment"] = htmlspecialchars($cells["afDepartment"]);
-                    $cells["afOffice"] = htmlspecialchars($cells["afOffice"]);
+                    $cells["afDepartment"] = htmlspecialchars((string)($cells["afDepartment"] ?? ''));
+                    $cells["afOffice"] = htmlspecialchars((string)($cells["afOffice"] ?? ''));
 //                    if($cells["afRMID"] == MANAGER_ID) { $cells["afManager"] = MANAGER_NAME; }
 //                    else { $cells["afManager"] = htmlspecialchars($cells["afManager"]); };
-                    $cells["afManager"] = htmlspecialchars($cells["afManager"]);
-					$cells["afCompany"] = htmlspecialchars($companies[$cells["afCompany"]]);
+                    $cells["afManager"] = htmlspecialchars((string)($cells["afManager"] ?? ''));
+					$cells["afCompany"] = htmlspecialchars((string)($companies[$cells["afCompany"]] ?? ''));
 								//htmlspecialchars(CompanyModel::GetShortName($cells["afCompany"]));
                 } else {
-                    $cells["afJob"] = htmlspecialchars($cells["afJob"]);
+                    $cells["afJob"] = htmlspecialchars((string)($cells["afJob"] ?? ''));
 					   if ($cells["afPosition"]=='HR Manager') $cells["afPosition"]='Not sure';
-                    $cells["afPosition"] = htmlspecialchars($cells["afPosition"]);
+                    $cells["afPosition"] = htmlspecialchars((string)($cells["afPosition"] ?? ''));
                 }
 
                 $imgFile = ApplyFormModel::IMG_PATH . str_replace("{---LiveID---}", $cells[$pg["key"]], ApplyFormModel::IMG_FILENAME);
@@ -401,6 +401,10 @@ class ApplicationView extends AppView
         } else {
             $isManager = false;
         }
+        if (RoleHelper::isInterviewer()) {
+            $args = self::$fldArgsBase + array("readonly" => "readonly");
+            $readonly = true;
+        }
 
         $args1 = $args;
         $args1["class"] = "form-control width-70 left";
@@ -425,7 +429,11 @@ class ApplicationView extends AppView
         form::codeStyle(true, 1, false);
         form::openTag("div", array("class" => "form-panel"/*, "style"=>"max-width:700px; margin: 20px auto 0px;"*/));
         form::$ofsetIndentsCount = 2;
-        form::openTag("form", array("method" => "post", "enctype" => "multipart/form-data", "validate" => true, "class" => "form-horizontal"));
+        if (RoleHelper::isInterviewer()) {
+            form::openTag("div", array("class" => "form-horizontal"));
+        } else {
+            form::openTag("form", array("method" => "post", "enctype" => "multipart/form-data", "validate" => true, "class" => "form-horizontal"));
+        }
 		 
 		 /*********************************
 		 if (!empty($data['afConnectedToProfile']) && $data['afConnectedToProfile']!=' '){
@@ -529,9 +537,10 @@ class ApplicationView extends AppView
             $f = $pg["pfx"] . "PID";
             $position = PositionModel::dataById($data[$f]);
 
+            $applyPositionName = (is_array($position) && isset($position["pName"])) ? $position["pName"] : "Unknown position";
             form::inpInfo(
                 " ",
-                "This person is already hired as <strong>{$emplData["afHiredPosition"]}</strong>. He/she is now applying as: <strong>{$position["pName"]}</strong>.<br/><a href='".ADMIN."employee-details?id={$emplData["afID"]}' target='_blank'>View profile >></a>",
+                "This person is already hired as <strong>{$emplData["afHiredPosition"]}</strong>. He/she is now applying as: <strong>{$applyPositionName}</strong>.<br/><a href='".ADMIN."employee-details?id={$emplData["afID"]}' target='_blank'>View profile >></a>",
                 $args3
             );
         } else {
@@ -689,7 +698,9 @@ class ApplicationView extends AppView
                     $list["positions"][0] = "Not sure";
                 } else {
                     $missed = PositionModel::dataById($data[$f]);
-                    $list["positions"][$data[$f]] = $missed["pName"];
+                    $list["positions"][$data[$f]] = (is_array($missed) && isset($missed["pName"]))
+                        ? $missed["pName"]
+                        : "Unknown position (#{$data[$f]})";
                 }
             }
             $list["positions"] = [$data[$f] => $list["positions"][$data[$f]]];
@@ -713,9 +724,12 @@ class ApplicationView extends AppView
             );
         }
         
-		  if ($list["positions"][$data[$f]] == 'Not sure' ) $sal='Not specified';
-        $f = $pg["pfx"] . "DesiredSalary";	  
-		  $sal = PositionModel::formatSalary($data[$f]) . " " . strtolower($data[$pg["pfx"] . "DesiredSalaryType"]);
+        $f = $pg["pfx"] . "DesiredSalary";
+        if (($list["positions"][$data[$pg["pfx"] . "PID"]] ?? '') === 'Not sure') {
+            $sal = 'Not specified';
+        } else {
+            $sal = PositionModel::formatSalary($data[$f]) . " " . strtolower((string)($data[$pg["pfx"] . "DesiredSalaryType"] ?? ''));
+        }
 		
 		 form::inpInfo(
             $lbls[($f = $pg["pfx"] . "DesiredSalary")] . ":",
@@ -728,7 +742,7 @@ class ApplicationView extends AppView
         form::inpField(
             $lbls[($f = $pg["pfx"] . "Skills")] . ":",
             $f,
-            str_replace("|", ", ", $data[$f]),
+            str_replace("|", ", ", (string)($data[$f] ?? '')),
             $args + array("readonly" => "readonly")
         );
 
@@ -1000,17 +1014,15 @@ class ApplicationView extends AppView
         form::inpField(
             $lbls[($f = $pg["pfx"] . "Comments")] . ":",
             $f,
-            htmlspecialchars($data[$f]),
+            htmlspecialchars((string)($data[$f] ?? '')),
             $args + array("type" => "textarea", "rows" => "6")
         );
         form::html('<hr/></div>');
 
-        // Hide hired fields for interviewers, or when status is not Hired
-        if (RoleHelper::isInterviewer()) {
-            $infoDisplay = ' style="display:none;" ';
-        } elseif (
+        if (!RoleHelper::isInterviewer()) {
+        if (
             ($data[$pg["pfx"] . "Active"] === 'Hired') ||
-            (filter_input(INPUT_POST, $pg["pfx"] . "Active") === "Hired")
+            (cf::requestStr(INPUT_POST, $pg["pfx"] . "Active") === "Hired")
         ) {
             $infoDisplay = "";
         } else {
@@ -1184,6 +1196,7 @@ class ApplicationView extends AppView
 
 
         form::html('<hr/></div>');
+        }
 
         // =====================================================
 // ASSIGN INTERVIEWERS + INTERVIEW NOTES (inside main form)
@@ -1510,7 +1523,7 @@ foreach ($assignedRoundRows as $ar) {
     }
 
         // Close main form and panel — after interviewer section
-        form::closeTag("form");
+        form::closeTag(RoleHelper::isInterviewer() ? "div" : "form");
         form::codeStyle(true, 1, true);
         form::closeTag("div", array("class" => "form-panel"));
 

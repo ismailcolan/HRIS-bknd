@@ -80,7 +80,7 @@ class WelcomeEmailView extends AppView {
 		  msg::get();
 		  ckeditor::prepare();
         $btnLabel = "Save";
-        if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "alert")  {
+        if(cf::requestStr(INPUT_GET, "cmd") === "alert")  {
             msg::put("You cannot delete a category with files it. Please first delete or move files.", "error");    
             $btnLabel = "Delete";        
         }

@@ -4,7 +4,7 @@ class helper {
     
     public static $pageExtension, $preparePassed = array();
     
-    static function prepare($setOrCheck = false, $classMethod){
+    static function prepare($setOrCheck, $classMethod){
         self::$pageExtension = cf::$rq["ext"];
         $continuePreparation = $setOrCheck === false ? true : false ;
         if($setOrCheck === true){

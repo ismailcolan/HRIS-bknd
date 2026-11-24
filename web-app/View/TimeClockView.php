@@ -3,7 +3,7 @@ class TimeClockView extends ApplicationView
 {
 
     public static function RenderWorkingHourList($errormessage,$singedoffstatus,$results,$weekstartdate,$weekenddate,$prevweekstartdate,
-	$prevweekenddate,$previousbutton,$nextweekstartdate,$nextweekenddate,$nextbutton,$req=array(),$user)
+	$prevweekenddate,$previousbutton,$nextweekstartdate,$nextweekenddate,$nextbutton,$req,$user)
       {
 
         //error_reporting(E_ERROR | E_PARSE);

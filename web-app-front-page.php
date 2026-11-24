@@ -25,14 +25,17 @@ class StaticPage extends PageFront {
     
     
     private static function contactSendEmail(){
-        $options =  array(
-                        "Name"=>FILTER_SANITIZE_ENCODED,
-                        "Company"=>FILTER_SANITIZE_STRING,
-                        "Phone"=>FILTER_SANITIZE_STRING,
-                        "Email"=>FILTER_VALIDATE_EMAIL,
-                        "Comments"=>FILTER_SANITIZE_STRING,
-                    );
-		$fd = filter_var_array($_POST["fd"], $options);
+        $raw = isset($_POST["fd"]) && is_array($_POST["fd"]) ? $_POST["fd"] : array();
+        $fd = array(
+            "Name" => isset($raw["Name"]) ? trim((string)$raw["Name"]) : "",
+            "Company" => isset($raw["Company"]) ? trim((string)$raw["Company"]) : "",
+            "Phone" => isset($raw["Phone"]) ? trim((string)$raw["Phone"]) : "",
+            "Email" => isset($raw["Email"]) ? filter_var($raw["Email"], FILTER_VALIDATE_EMAIL) : false,
+            "Comments" => isset($raw["Comments"]) ? trim((string)$raw["Comments"]) : "",
+        );
+        if ($fd["Email"] === false) {
+            $fd["Email"] = "";
+        }
         
 		//$fd = array_map("htmlentities", $fd, array(ENT_QUOTES));
 		//$fd = array_map('stripslashes', $fd);

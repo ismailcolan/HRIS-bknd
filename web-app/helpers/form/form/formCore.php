@@ -75,7 +75,7 @@ class formCore {
         if(substr($name,-3)==self::GET_OUTPUT_FUNC_SUFFIX){
 			//echo '>>>'.substr($name,0,-3);
             self::$output = "";
-            forward_static_call_array(array("static",substr($name,0,-3)), $arguments);
+            forward_static_call_array(array(static::class, substr($name,0,-3)), $arguments);
             $out = self::$output;
             static::$output = false;
             return $out;
@@ -96,7 +96,7 @@ class formCore {
         $tagsWithoutArgs = array("br","hr");
         if(in_array($name, $tagsWithoutArgs)){
             //Extracting the tag repeater
-            $repeat = (isset($arguments[0]) && abs($arguments[0]) > 1) ? abs($arguments[0]) : false;
+            $repeat = (isset($arguments[0]) && is_numeric($arguments[0]) && abs((int)$arguments[0]) > 1) ? abs((int)$arguments[0]) : false;
             $arguments = array("");
         } else if ($name=="clear"){
             $arguments = array(" ",array("class"=>"clearfix"));
@@ -199,7 +199,10 @@ class formCore {
             self::processBefore();
         }
         $html = str_repeat("</" . $tag . ">", $closeRepeater);
-        self::html($html);
+        if (is_array($closeRepeater)) {
+            $closeRepeater = 1;
+        }
+        $closeRepeater = (is_numeric($closeRepeater) && abs((int)$closeRepeater) > 0) ? (int)$closeRepeater : 1;
         self::processAfter();
         if ($tag=="form"){
             self::afterFormTagJS();

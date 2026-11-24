@@ -977,7 +977,7 @@ echo '
 
 //             // ===== SYNC PASSWORD TO ADMIN ACCOUNT IF EXISTS =====
 //             $employeeId = (int)self::$id;
-//             $newPass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+//             $newPass = cf::requestStr(INPUT_POST, "pass");
 
 //             // Check if this employee has an admin account
 //             $adminAccount = db::PrepareLoadSingleRow(
@@ -1027,7 +1027,7 @@ final static function SetPassword($lists = array())
             // SYNC PASSWORD TO ADMIN TOKEN IF APPLICABLE
             // ============================================
             $employeeId = (int)self::$id;
-            $newPass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+            $newPass = cf::requestStr(INPUT_POST, "pass");
             
             self::syncAdminToken($employeeId, $newPass);
             // ============================================
@@ -1316,7 +1316,7 @@ public static function SyncPasswordToAdminAccount($employeeId, $newPass)
 
     public static function CheckForUndoOnboarding($renderDetails = true)
     {
-        if (filter_has_var(INPUT_GET, "cmd") && (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "undo")) {
+        if (filter_has_var(INPUT_GET, "cmd") && (cf::requestStr(INPUT_GET, "cmd") === "undo")) {
             $eoID = intval(filter_input(INPUT_GET, "eoid", FILTER_SANITIZE_NUMBER_INT));
             if ($eoID > 0) {
                 $q = 'update employee_onboarding set eoCompletedOn=null, eoCompletedBy=null where eoID=' . $eoID;
@@ -1328,7 +1328,7 @@ public static function SyncPasswordToAdminAccount($employeeId, $newPass)
             }
         }
 		
-		 if (filter_has_var(INPUT_GET, "cmd") && (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "mark")) {
+		 if (filter_has_var(INPUT_GET, "cmd") && (cf::requestStr(INPUT_GET, "cmd") === "mark")) {
             $eoID = intval(filter_input(INPUT_GET, "eoid", FILTER_SANITIZE_NUMBER_INT));
             if ($eoID > 0) {
                 $q = 'update employee_onboarding set eoCompletedOn="'.val::currentDate('Y-m-d H:i:s')
@@ -1443,8 +1443,8 @@ public static function SyncPasswordToAdminAccount($employeeId, $newPass)
 
         $oldSalary = EmployeeController::$data["afSalary"];
         $oldSalaryType = EmployeeController::$data["afSalaryType"];
-        $newSalary = filter_input(INPUT_POST, "afSalary", FILTER_SANITIZE_STRING);
-        $newSalaryType = filter_input(INPUT_POST, "afSalaryType", FILTER_SANITIZE_STRING);
+        $newSalary = cf::requestStr(INPUT_POST, "afSalary");
+        $newSalaryType = cf::requestStr(INPUT_POST, "afSalaryType");
 
         if (($oldSalary !== $newSalary) || ($oldSalaryType !== $newSalaryType)) {
             FieldHistoryModel::AddHistory("salary", $id, PositionModel::formatSalary($newSalary) . " " . strtolower($newSalaryType));
@@ -1479,7 +1479,7 @@ public static function SyncPasswordToAdminAccount($employeeId, $newPass)
         }
 
         $fileName = str_replace("{---LiveID---}", $id, ApplyFormModel::IMG_FILENAME);
-        if (filter_has_var(INPUT_POST, "photoCmd") && (filter_input(INPUT_POST, "photoCmd", FILTER_SANITIZE_STRING) === "remove")) {
+        if (filter_has_var(INPUT_POST, "photoCmd") && (cf::requestStr(INPUT_POST, "photoCmd") === "remove")) {
            
 			$photoFile = "../" . ApplyFormModel::IMG_PATH . $fileName;
             if (file_exists($photoFile)) {
@@ -1498,10 +1498,10 @@ public static function SyncPasswordToAdminAccount($employeeId, $newPass)
         ApplyFormModel::UpdateAdminRecord($id, $newPosition, filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_EMAIL), self::$data["afToken"]);
         
         // ===== SYNC HR MANAGER / INTERVIEWER ROLE MAPPING =====
-$isHR   = filter_input(INPUT_POST, 'afIsHRManager',   FILTER_SANITIZE_STRING) === 'yes' ? 'yes' : 'no';
-$isIV   = filter_input(INPUT_POST, 'afIsInterviewer',  FILTER_SANITIZE_STRING) === 'yes' ? 'yes' : 'no';
+$isHR   = cf::requestStr(INPUT_POST, 'afIsHRManager') === 'yes' ? 'yes' : 'no';
+$isIV   = cf::requestStr(INPUT_POST, 'afIsInterviewer') === 'yes' ? 'yes' : 'no';
 $empEmail = filter_input(INPUT_POST, 'afEmail', FILTER_SANITIZE_EMAIL);
-$plainPass = filter_input(INPUT_POST, 'afPass',  FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+$plainPass = cf::requestStr(INPUT_POST, 'afPass');
 // NOTE: only pass $plainPass if your form has a "new password" input called afPass.
 //       Leave it empty string if the password field is on a separate page (SetPassword).
 self::syncRoleMapping((int)$id, $isHR, $isIV, $empEmail, (string)$plainPass);
@@ -1615,10 +1615,10 @@ self::syncRoleMapping((int)$id, $isHR, $isIV, $empEmail, (string)$plainPass);
 		msg::prepare();
 		$msg = array();
 			
-		$filename =  filter_input(INPUT_POST, 'filename', FILTER_SANITIZE_STRING);
+		$filename =  cf::requestStr(INPUT_POST, 'filename');
 		$userID =  intval(filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT));
 		$cat_id =  intval(filter_input(INPUT_POST, 'category_id', FILTER_SANITIZE_NUMBER_INT));
-		$visible = filter_input(INPUT_POST, 'visible', FILTER_SANITIZE_STRING);
+		$visible = cf::requestStr(INPUT_POST, 'visible');
 		
 		if($cat_id == 0) {$m='Please select a category.';
 		   $msg[]=$m;

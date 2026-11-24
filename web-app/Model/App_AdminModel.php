@@ -5,6 +5,17 @@ class App_AdminModel extends AppModel {
     static function NavArrays(){
         $main = $sub = array();
         $trigger  = array("main"=>array(),"sub"=>array());
+
+        if (class_exists('RoleHelper', false) && RoleHelper::isInterviewer()) {
+            $main["applications"] = array("Applications", array("title" => "Applications"));
+            if (in_array(cf::$rq["class"], array("applications"))) {
+                $trigger["main"]["applications"] = "applications";
+                $trigger["sub"]["application-details"] = "for-interview-applications";
+                $trigger["sub"]["for-interview-applications"] = "for-interview-applications";
+                $sub["for-interview-applications"] = array("For interview", array("title" => "Applications for interview list"));
+            }
+            return array($main, $sub, $trigger);
+        }
         
         $main["home"] = array("Home", array("title"=>"Admin home"));
         if(in_array(cf::$rq["class"], array("home","webapp-admins", "webapp-settings", "webapp-change-password"))){

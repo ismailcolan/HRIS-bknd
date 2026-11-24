@@ -95,7 +95,7 @@ class OnboardingModel extends AppModel
         return false;
     }
 
-    static function query($conditions = '', $orderby = array(), $limit = 0,$type)
+    static function query($conditions, $orderby, $limit, $type)
     {
         $query = "SELECT *, 
                         (select concat(afFirstName, ' ', afLastName) from apply_forms where afID=otAFID) otEmployee,

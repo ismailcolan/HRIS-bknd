@@ -135,11 +135,11 @@ class ResourcesController extends AppController
     {
         $error = "Please enter a link!";
         if (filter_has_var(INPUT_POST, "newResourceLink")) {
-            $link = trim(filter_input(INPUT_POST, "newResourceLink", FILTER_SANITIZE_STRING));
+            $link = trim(cf::requestStr(INPUT_POST, "newResourceLink"));
             if (!empty($link)) {
                 $error = "";
             }
-            $text = trim(filter_input(INPUT_POST, "newResourceLinkText", FILTER_SANITIZE_STRING));
+            $text = trim(cf::requestStr(INPUT_POST, "newResourceLinkText"));
         }
 
         if (empty($error)) {

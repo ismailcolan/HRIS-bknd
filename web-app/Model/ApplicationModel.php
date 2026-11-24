@@ -12,7 +12,7 @@ class ApplicationModel extends ApplyFormModel {
         } else if($C::$rq==="summary"){
             $title = (filter_has_var(INPUT_GET, "id") ? $C::$data[self::$dt["pfx"]."FirstName"]. " " . $C::$data[self::$dt["pfx"]."LastName"] : cf::end(__METHOD__));
             $links = AccessModel::AdminPageHeaderLnk($C);
-        } else if($C::$rq==="details" && filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "trash"){
+        } else if($C::$rq==="details" && cf::requestStr(INPUT_GET, "cmd") === "trash"){
             $title = "<span class=\"text-danger\">Delete</span> application form #".$C::$id;
             $links = null;
         } else {

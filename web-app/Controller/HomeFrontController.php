@@ -17,7 +17,7 @@ class HomeFrontController extends AppController {
         msg::get();
     
         if(filter_has_var(INPUT_GET, "autologin")) {
-            $key = db::EscapeStr(filter_input(INPUT_GET, "autologin", FILTER_SANITIZE_STRING));
+            $key = db::EscapeStr(cf::requestStr(INPUT_GET, "autologin"));
             $q = 'select * from apply_forms where afKey="'.$key.'"';
             $user = db::PrepareLoadSingleRow($q);
 

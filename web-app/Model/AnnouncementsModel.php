@@ -24,9 +24,10 @@ class AnnouncementsModel extends AppModel
         $lbl = strtolower(self::$fldLbl[$name]);
         if (val::required($name, "Please enter a valid " . self::$fldLbl[$name] . " in format [" . USER_DATE . "]")) {
             if (val::validDate($name, "Invalid {$lbl} . Valid {$lbl} example: 12/30/1990")) {
-                $date = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, $name));
-                if ($date === false) {
-                    $date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, filter_input(INPUT_POST, $name));
+                $date = val::parseUserDate(val::postValue($name));
+                if (!($date instanceof DateTime)) {
+                    val::setError($name, "Invalid {$lbl}. Valid {$lbl} example: 12/30/1990.");
+                    return;
                 }
 
                 $today = new DateTime();

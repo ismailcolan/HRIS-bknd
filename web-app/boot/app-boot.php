@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ALL);
+// Deprecations still log but must not print into HTML (breaks admin layout on PHP 8.5).
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', 1);
 require_once("RoleHelper.php");
 // if (isset($_GET['phptest'])) {
@@ -231,24 +232,15 @@ if (isset(AppModel::$admin) && !empty(AppModel::$admin)) {
 
     // ================= INTERVIEWER =================
     if (RoleHelper::isInterviewer()) {
-
-        $allowedUrls = [
+        $pathBase = strtolower(trim(explode('?', $currentUrl)[0], '/'));
+        $allowedExact = array(
             'for-interview-applications',
             'application-details',
             'logout',
-            'password',
-            'employee-password',
-        ];
-
-        $allowed = false;
-        foreach ($allowedUrls as $url) {
-            if (strpos($currentUrl, $url) !== false) {
-                $allowed = true;
-                break;
-            }
-        }
-
-        if (!$allowed) {
+            'login',
+            'webapp-change-password',
+        );
+        if (!in_array($pathBase, $allowedExact, true)) {
             cf::Redirect(ADMIN . 'for-interview-applications');
             exit;
         }

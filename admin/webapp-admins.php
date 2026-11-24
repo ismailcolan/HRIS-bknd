@@ -8,7 +8,7 @@ class adminSection extends PageAdmin {
     public function __construct($id = 0, $C = self::CONTROLLER){
         parent::__construct();
 
-        if (!in_array(AppModel::$admin["waaRole"], array("Admin","Editor"))){
+        if (!is_array(AppModel::$admin) || !in_array(AppModel::$admin["waaRole"] ?? '', array("Admin","Editor"))){
             cf::Redirect("home");
         }
                 
@@ -60,7 +60,7 @@ class adminSection extends PageAdmin {
 
             //We have to validate/confirm old password
             if(self::$usr["waaID"] == self::$id){
-                $oldPass = filter_input(INPUT_POST, "waatPassOld", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+                $oldPass = cf::requestStr(INPUT_POST, "waatPassOld");
                 $salt = db::PrepareLoadSingleCellValue("SELECT waatSalt FROM webapp_admins_tokens WHERE waatID=".self::$id);
                 $token = cf::hashTokenByPassAndSalt($oldPass, $salt);
                 $q = "SELECT waatID FROM webapp_admins_tokens WHERE waatToken = AES_ENCRYPT(\"" . $token . "\", \"".WEBAPP_SQL_SECRET_KEY."\") AND waatID = ".self::$usr["waaID"];
@@ -79,13 +79,13 @@ class adminSection extends PageAdmin {
 
         $qList["webapp_admins_tokens"] = array("key"=>"waatID", "data"=>array());
         if(self::$id == 0){
-            $usernameForSalt = filter_input(INPUT_POST, "waaUsername", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+            $usernameForSalt = cf::requestStr(INPUT_POST, "waaUsername");
             $salt = cf::saltAnWord($usernameForSalt);
             $qList["webapp_admins_tokens"]["data"][] = "waatSalt = \"" . $salt . "\"";
         } else {
             $salt = !empty($salt) ? $salt : db::PrepareLoadSingleCellValue("SELECT waatSalt FROM webapp_admins_tokens WHERE waatID=".self::$id);
         }
-        $pass = filter_input(INPUT_POST, "waatPass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $pass = cf::requestStr(INPUT_POST, "waatPass");
         $token = cf::hashTokenByPassAndSalt($pass, $salt);
         $qList["webapp_admins_tokens"]["data"][] = "waatToken = AES_ENCRYPT(\"" . $token . "\", \"".WEBAPP_SQL_SECRET_KEY."\")";
 
@@ -174,7 +174,7 @@ $adminSection->Header();
 if($adminSection::$rq === "list") {
         $adminSection->All();
 } else if($adminSection::$rq === "details") {
-    if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "delete") {
+    if(cf::requestStr(INPUT_GET, "cmd")=== "delete") {
         $adminSection->Delete();
     } else if(filter_has_var(INPUT_POST,"waaUsername")) {
         $adminSection->DetailsSave();

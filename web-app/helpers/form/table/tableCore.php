@@ -169,7 +169,7 @@ class tableCore {
 		}
 		else {
         $filterByGetValue = filter_input(INPUT_GET, "filter-by", FILTER_VALIDATE_INT);
-        $filterGetValue = filter_input(INPUT_GET, "filter",FILTER_SANITIZE_STRING);
+        $filterGetValue = cf::requestStr(INPUT_GET, "filter");
         if(self::$filterActive){
             self::openTag("div",array("class"=>"filter"));
                 self::openTag("div");

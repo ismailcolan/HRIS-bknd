@@ -245,8 +245,11 @@ class WebpageAssetsAdminView extends AppView
                     $code = "";
                 }
             
+                $applicationsListUrl = RoleHelper::isInterviewer()
+                    ? ADMIN . "for-interview-applications"
+                    : ADMIN . "applications";
                 $code .= "<li class='" . (in_array($active, ["applications"]) ? "active" : "inactive") . "'>
-                        <a href='" . ADMIN . "applications'>Applications</a>
+                        <a href='" . $applicationsListUrl . "'>Applications</a>
                         </li>";
             
                 if (RoleHelper::isAdmin()) {

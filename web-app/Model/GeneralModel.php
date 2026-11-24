@@ -49,10 +49,14 @@ class GeneralModel extends AppModel
 		$res = true;
 		foreach ($_POST as $k=>$v){
 			if ($k == 'save-btn') continue;
-			$val=filter_input(INPUT_POST, $k, FILTER_SANITIZE_STRING);
-			$q = "INSERT INTO webapp_admin_settings (asKey,asValue) VALUES ('{$k}', '{$v}')
-				ON DUPLICATE KEY UPDATE asValue = '{$v}'";
-				$res = $res && db::SQL($q);
+			if (!is_scalar($v)) {
+				continue;
+			}
+			$escaped = db::EscapeStr((string)$v, true);
+			$key = db::EscapeStr((string)$k, true);
+			$q = "INSERT INTO webapp_admin_settings (asKey,asValue) VALUES ({$key}, {$escaped})
+				ON DUPLICATE KEY UPDATE asValue = {$escaped}";
+			$res = $res && db::SQL($q);
 		}
 		
 		return  $res;

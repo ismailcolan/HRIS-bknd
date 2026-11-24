@@ -55,7 +55,7 @@ class adminHome extends PageAdmin {
     }
     
     private function adminHomeViewWelcome(&$welcomeTitle, &$welcomeText){
-        if(in_array(AppModel::$admin["waaRole"],array("Admin","Editor"))){
+        if(is_array(AppModel::$admin) && in_array(AppModel::$admin["waaRole"] ?? '', array("Admin","Editor"))){
             $welcomeText .= cf::getOutput("form", "tag", array("<span class=\"fa fa-pencil-square-o\"></span> Edit welcome section", "button", array("onclick"=>"location.assign('".self::$pg["view"]["url"]."?cmd=edit')", "class"=>"edit")));
         }
     }
@@ -100,7 +100,7 @@ class adminHome extends PageAdmin {
     		self::adminHomeEditWelcome();
 			return;
 		}
-        $title = filter_input(INPUT_POST, "welcomeTitle", FILTER_SANITIZE_STRING);
+        $title = cf::requestStr(INPUT_POST, "welcomeTitle");
         $text = filter_input(INPUT_POST,"welcomeText");
         $data = $title."\r\n---End-Title-Start-Content---\r\n". $text;
         $f = fopen(APP_HTML . "admin/home-welcome-msg.md", 'w') or die("Can't open welcome data file.");
@@ -149,7 +149,7 @@ class adminHome extends PageAdmin {
         $C::$pg = $pg;
         
         $C::$rq = "view";
-        if(in_array(AppModel::$admin["waaRole"],array("Admin","Editor")) && filter_has_var(INPUT_GET, "cmd")){
+        if(is_array(AppModel::$admin) && in_array(AppModel::$admin["waaRole"] ?? '', array("Admin","Editor")) && filter_has_var(INPUT_GET, "cmd")){
             $C::$rq  = filter_has_var(INPUT_POST, "welcomeTitle") ? "save" : "edit";
         }
     }

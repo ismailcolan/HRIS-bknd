@@ -124,6 +124,6 @@ RewriteRule ^admin/(.*)$ web-app-router.php?rq=$1 [L,QSA]
 # ---------------------------------------------
 
 <FilesMatch \.php$>
-        SetHandler proxy:fcgi://humanroadferndaleroadcom-php56
+        SetHandler proxy:fcgi://humanroadferndaleroadcom-php85
 </FilesMatch>
 

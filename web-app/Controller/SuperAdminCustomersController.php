@@ -139,15 +139,15 @@ class SuperAdminCustomersController extends AppController {
 			/**** SAVE BEGIN ********/
 			
 			if(isset($_GET['id'])) $ID=$_GET['id'];
-			$Active = filter_input(INPUT_POST, "cActive", FILTER_SANITIZE_STRING);
-			$cCustomerName = filter_input(INPUT_POST, "cCustomerName", FILTER_SANITIZE_STRING);
+			$Active = cf::requestStr(INPUT_POST, "cActive");
+			$cCustomerName = cf::requestStr(INPUT_POST, "cCustomerName");
 			$cCustomerName=trim(preg_replace('/\s+/S', " ", $cCustomerName)); //strtoupper(
-			$cCustomerShortName = filter_input(INPUT_POST, "cCustomerShortName", FILTER_SANITIZE_STRING);
+			$cCustomerShortName = cf::requestStr(INPUT_POST, "cCustomerShortName");
 			$cCustomerShortName=trim(preg_replace('/\s+/S', " ", $cCustomerShortName));//strtoupper
-			$cPass = filter_input(INPUT_POST, "cPass", FILTER_SANITIZE_STRING);
-			$cDB = filter_input(INPUT_POST, "cDBASE", FILTER_SANITIZE_STRING);
+			$cPass = cf::requestStr(INPUT_POST, "cPass");
+			$cDB = cf::requestStr(INPUT_POST, "cDBASE");
 			
-			//$cEmail = filter_input(INPUT_POST, "cAdminEmail", FILTER_SANITIZE_STRING);
+			//$cEmail = cf::requestStr(INPUT_POST, "cAdminEmail");
 			
 			if(self::SetCustomerAdminPass($cPass,$cDB)){
 				$q = "INSERT INTO customers SET cCustomerName='{$cCustomerName}',cCustomerShortName='{$cCustomerShortName}',
@@ -189,14 +189,14 @@ class SuperAdminCustomersController extends AppController {
 			/**** SAVE BEGIN ********/
 			//cf::pr($_POST);cf::pr($_FILES);exit;
 			$ID=$_GET['id'];
-			$Active = filter_input(INPUT_POST, "cActive", FILTER_SANITIZE_STRING);
-			$cCustomerName = filter_input(INPUT_POST, "cCustomerName", FILTER_SANITIZE_STRING);
+			$Active = cf::requestStr(INPUT_POST, "cActive");
+			$cCustomerName = cf::requestStr(INPUT_POST, "cCustomerName");
 			$cCustomerName=trim(preg_replace('/\s+/S', " ", $cCustomerName)); //strtoupper(
-			$cCustomerShortName = filter_input(INPUT_POST, "cCustomerShortName", FILTER_SANITIZE_STRING);
+			$cCustomerShortName = cf::requestStr(INPUT_POST, "cCustomerShortName");
 			$cCustomerShortName=trim(preg_replace('/\s+/S', " ", $cCustomerShortName));//strtoupper(
-			$cPass = filter_input(INPUT_POST, "cPass", FILTER_SANITIZE_STRING);
-			$cDB = filter_input(INPUT_POST, "cDBASE", FILTER_SANITIZE_STRING);
-			//$cEmail = filter_input(INPUT_POST, "cAdminEmail", FILTER_SANITIZE_STRING);
+			$cPass = cf::requestStr(INPUT_POST, "cPass");
+			$cDB = cf::requestStr(INPUT_POST, "cDBASE");
+			//$cEmail = cf::requestStr(INPUT_POST, "cAdminEmail");
 			
 			    $q = "UPDATE customers SET cCustomerName='{$cCustomerName}',cCustomerShortName='{$cCustomerShortName}',
 				cActive = '{$Active}', cDBASE='{$cDB}' WHERE cID={$ID}"; //cPass ='{$cPass}',cAdminEmail ='{$cEmail}',

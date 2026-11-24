@@ -117,7 +117,7 @@ class PayrollReportController extends AppController {
 						$pSic = self::deys_between($r2['vrRealDays'],$_startDate,$_endDate);
 						//DaysOffFrontModel::getWorkingDaysBetween($r['afID'],$_startDate,$_endDate);
 					}
-					$paidSic = $paidSic + (real)$pSic;
+					$paidSic = $paidSic + (float)$pSic;
 				}
 				
 				
@@ -151,7 +151,7 @@ class PayrollReportController extends AppController {
 						$pVac = self::deys_between($r2['vrRealDays'],$_startDate,$_endDate);
 						//DaysOffFrontModel::getWorkingDaysBetween($r['afID'],$_startDate,$_endDate);
 					}
-					$paidVac = $paidVac + (real)$pVac;
+					$paidVac = $paidVac + (float)$pVac;
 				}
 				
 				$paidVac = $paidVac * 8;// in hours

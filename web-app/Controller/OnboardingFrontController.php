@@ -238,7 +238,7 @@ class OnboardingFrontController extends AppController
 		 $having='HAVING otEmployeer IS NOT NULL';
         if(filter_has_var(INPUT_GET, "name0")) {
 			  $activePage = "pending";
-            $name = db::EscapeStr(filter_input(INPUT_GET, "name0", FILTER_SANITIZE_STRING));
+            $name = db::EscapeStr(cf::requestStr(INPUT_GET, "name0"));
             if(!empty($name)) {
                 //$cond[] = " (SELECT CONCAT(afFirstName, ' ', afLastName) FROM apply_forms WHERE afID=eoAFID) like '%{$name}%' ";
 				   $having = "  AND otEmployeer like '%{$name}%' ";
@@ -269,7 +269,7 @@ class OnboardingFrontController extends AppController
 		 $having='HAVING otEmployeer IS NOT NULL AND otResponsibleEmployeer IS NOT NULL ';
         if(filter_has_var(INPUT_GET, "name1")) {
             $activePage = "completed";
-            $name = db::EscapeStr(filter_input(INPUT_GET, "name1", FILTER_SANITIZE_STRING));
+            $name = db::EscapeStr(cf::requestStr(INPUT_GET, "name1"));
             if(!empty($name)) {
                 //$cond[] = " (SELECT CONCAT(afFirstName, ' ', afLastName) FROM apply_forms WHERE afID=eoAFID) like '%{$name}%' ";
 				   $having = " AND otEmployeer  like '%{$name}%' ";
@@ -301,7 +301,7 @@ class OnboardingFrontController extends AppController
 		  $having='';
         if(filter_has_var(INPUT_GET, "name9")) {
 			  $activePage = "about-me";
-            $name = db::EscapeStr(filter_input(INPUT_GET, "name9", FILTER_SANITIZE_STRING));
+            $name = db::EscapeStr(cf::requestStr(INPUT_GET, "name9"));
             if(!empty($name)) {
                 $having = "  HAVING otEmployeer like '%{$name}%' ";
 				" //(SELECT CONCAT(afFirstName, ' ', afLastName) FROM apply_forms WHERE afID=eoAFID) like '%{$name}%' ";

@@ -71,13 +71,13 @@ class WebappAdminController extends AppController
 	static function ForceLogin()
 	{
 
-		$customer = filter_input(INPUT_GET, "customer", FILTER_SANITIZE_STRING);
+		$customer = cf::requestStr(INPUT_GET, "customer");
 
 		$customer = strtoupper(trim(preg_replace('/\s+/S', " ", $customer)));
 
 
 
-		$hash = filter_input(INPUT_GET, "hash", FILTER_SANITIZE_STRING);
+		$hash = cf::requestStr(INPUT_GET, "hash");
 
 
 
@@ -149,13 +149,13 @@ class WebappAdminController extends AppController
 
 		//cf::pr($_POST);
 
-		$customer = filter_input(INPUT_POST, "customer", FILTER_SANITIZE_STRING);
+		$customer = cf::requestStr(INPUT_POST, "customer");
 
 		$customer = strtoupper(trim(preg_replace('/\s+/S', " ", $customer)));
 
 
 
-		$email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_STRING);
+		$email = cf::requestStr(INPUT_POST, "email");
 
 		$q = "SELECT * FROM customers WHERE (UPPER(cCustomerName) = '{$customer}' OR UPPER(cCustomerShortName) = '{$customer}') AND cActive = 'yes' ";
 
@@ -329,7 +329,7 @@ class WebappAdminController extends AppController
 
 	// static function LoginProcess(){ //cf::pr($_GET);
 
-	// 	$customer = filter_input(INPUT_POST, "customer", FILTER_SANITIZE_STRING);
+	// 	$customer = cf::requestStr(INPUT_POST, "customer");
 
 
 
@@ -382,7 +382,7 @@ class WebappAdminController extends AppController
 
 	static function LoginProcess()
 	{
-		$customer = filter_input(INPUT_POST, "customer", FILTER_SANITIZE_STRING);
+		$customer = cf::requestStr(INPUT_POST, "customer");
 
 		if (!db::SwitchToReal()) {
 			form::$error["customer"][] = "No such customer registered.";

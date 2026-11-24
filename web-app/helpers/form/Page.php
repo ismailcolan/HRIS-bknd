@@ -34,7 +34,7 @@ class Page {
         require_once(str_replace("[:lang:]", self::$lang, APP_LANG_FILENAME_TEMPLATE));
     }
 
-    private final function setHeadVars(&$v){
+    private function setHeadVars(&$v){
         //lang::prepare();
         form::codeStyle(true, 1);
             

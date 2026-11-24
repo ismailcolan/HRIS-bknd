@@ -7,8 +7,14 @@ class GeneralController extends AppController {
     public static $id, $data, $pg;
 
 	final static function SaveAdminMails(){
-		if (GeneralModel::SaveData()) msg::set ('Changes were saved.','success');
-		else msg::set ('There was a problem to save all changes.','error');
+		if (!GeneralModel::ValidateAdminMails()) {
+		    return;
+		}
+		if (GeneralModel::saveData()) {
+		    msg::set('Changes were saved.', 'success');
+		} else {
+		    msg::set('There was a problem to save all changes.', 'error');
+		}
 		cf::Redirect(ADMIN.'/general');
 	}
     

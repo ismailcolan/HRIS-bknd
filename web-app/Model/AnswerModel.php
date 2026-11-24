@@ -61,7 +61,7 @@ class AnswerModel extends AppModel {
         if(in_array($C::$rq, array("list", "inactive-list"))){
             $title = $C::$pg[$C::$rq]["title"];
             $links = AccessModel::AdminPageHeaderLnk($C);
-        } else if($C::$rq==="details" && filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "trash"){
+        } else if($C::$rq==="details" && cf::requestStr(INPUT_GET, "cmd")=== "trash"){
             $title = "<span class=\"text-danger\">Delete</span> Answer #".$C::$id;
             $links = null;
         } else {

@@ -60,7 +60,7 @@ class SuperAdminHome extends PageSuperAdmin {
     		self::adminHomeEditWelcome();
 			return;
 		}
-        $title = filter_input(INPUT_POST, "welcomeTitle", FILTER_SANITIZE_STRING);
+        $title = cf::requestStr(INPUT_POST, "welcomeTitle");
         $text = filter_input(INPUT_POST,"welcomeText");
         $data = $title."\r\n---End-Title-Start-Content---\r\n". $text;
         $f = fopen(APP_HTML . "admin/home-welcome-msg.md", 'w') or die("Can't open welcome data file.");

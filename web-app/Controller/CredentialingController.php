@@ -86,9 +86,19 @@ class CredentialingController extends AppController {
 				CredentialingModel::DetailsValidate("server", $lists); 
 			} 
 			catch (Exception $e) {
-			  foreach($_POST as $k=>$v){
-				  self::$data[$k] = $v;
+			  $base = CredentialingModel::dataById(self::$id);
+			  if (!is_array($base)) {
+			      $base = is_array(self::$data) ? self::$data : [];
 			  }
+			  foreach ($_POST as $k => $v) {
+			      if (is_scalar($v) || is_array($v)) {
+			          $base[$k] = $v;
+			      }
+			  }
+			  if (isset($_POST['cPositions']) && is_array($_POST['cPositions'])) {
+			      $base['cPositions'] = array_values($_POST['cPositions']);
+			  }
+			  self::$data = $base;
 			  return self::Details();
 			}
 
@@ -121,14 +131,14 @@ class CredentialingController extends AppController {
         }
         $oldTimeFrame = self::$data["cTimeFrameNum"].self::$data["cTimeFrameDim"];
         $newTimeFrame = filter_input(INPUT_POST, "cTimeFrameNum", FILTER_SANITIZE_NUMBER_INT).
-            filter_input(INPUT_POST, "cTimeFrameDim", FILTER_SANITIZE_STRING);
+            cf::requestStr(INPUT_POST, "cTimeFrameDim");
 
         if($oldTimeFrame != $newTimeFrame) {
             EmployeeCredentialingModel::ChangeCredentialingTimeFrame(self::$id,
                 self::$data["cTimeFrameNum"],
                 self::$data["cTimeFrameDim"],
                 filter_input(INPUT_POST, "cTimeFrameNum", FILTER_SANITIZE_NUMBER_INT),
-                filter_input(INPUT_POST, "cTimeFrameDim", FILTER_SANITIZE_STRING));
+                cf::requestStr(INPUT_POST, "cTimeFrameDim"));
         }
 		 if ($_POST['cType']!= self::$data['cType']) CredentialingModel::$postOverrided['cOldType']=self::$data['cType'];
 		
@@ -217,7 +227,7 @@ class CredentialingController extends AppController {
 			$pos[]=$p['cpPID'];
 		}
 		
-		$q='SELECT afID,afHiredForPID FROM apply_forms WHERE afActive - "Hired"';
+		$q='SELECT afID,afHiredForPID FROM apply_forms WHERE afActive = "Hired"';
 		$emp = db::PrepareLoad($q);
 		
 		foreach($emp as $k=>$em ) {
@@ -232,59 +242,49 @@ class CredentialingController extends AppController {
 					   
 			if ($data['cType'] == 'one-time'){
 				$data["cExpiredDate"] = val::currentDate(MYSQL_DATE);
-				$ti = $data["cTimeFrameNum"].' '.$data["cTimeFrameDim"];
-				$DueDate=DateTime::createFromFormat(MYSQL_DATE,$data["cExpiredDate"] );
-				$DueDate->add(date_interval_create_from_date_string($ti));
+				$DueDate = DateTime::createFromFormat(MYSQL_DATE, $data["cExpiredDate"]);
+				cf::addTimeFrameToDate($DueDate, $data["cTimeFrameNum"], $data["cTimeFrameDim"]);
 				$data["cDueDate"] = $DueDate->format(MYSQL_DATE_TIME);
 			}
 			
 			if ($data['cType'] == 'recurring'){
 				if (! isset($data['ecAFID']) || self::firstTimeInsert($data['ecAFID'],$data['ecCID'])){
 					$data["cExpiredDate"] = val::currentDate(MYSQL_DATE);
-					$ti = $data["cTimeFrameNum"].''.$data["cTimeFrameDim"];
-					$DueDate=DateTime::createFromFormat(MYSQL_DATE,$data["cExpiredDate"] );
-					$DueDate->add(date_interval_create_from_date_string($ti));
+					$DueDate = DateTime::createFromFormat(MYSQL_DATE, $data["cExpiredDate"]);
+					cf::addTimeFrameToDate($DueDate, $data["cTimeFrameNum"], $data["cTimeFrameDim"]);
 					$data["cDueDate"] = $DueDate->format(MYSQL_DATE_TIME);
 					
 				}
 				else {
 					$data["cExpiredDate"] = $data["ecDueDate"];
-					$ti = $data['cRenewalTimeFrameNum'].''.$data['cRenewalTimeFrameDim'];
-					$DueDate=DateTime::createFromFormat(MYSQL_DATE_TIME,$data["cExpiredDate"] );
-					$DueDate->add(date_interval_create_from_date_string($ti));
+					$DueDate = DateTime::createFromFormat(MYSQL_DATE_TIME, $data["cExpiredDate"]);
+					cf::addTimeFrameToDate($DueDate, $data['cRenewalTimeFrameNum'], $data['cRenewalTimeFrameDim']);
 					$data["cDueDate"] = $DueDate->format(MYSQL_DATE_TIME);
 				}
 			}
 			
 			if ($data['cHasExpirationDate'] == 'yes' && isset($_POST['credentialingExpDate'])){
-				$date=DateTime::createFromFormat(USER_DATE,$_POST['credentialingExpDate']);
-				$data["cExpiredDate"]=$date->format(MYSQL_DATE_TIME);
-				$ti= $data['cRenewalTimeFrameNum'].' '.$data['cRenewalTimeFrameDim'];
-				
-				$date->add(date_interval_create_from_date_string($ti));
-				$data["cDueDate"]=$data["cExpiredDate"];
+				$date = val::parseUserDate(val::postValue('credentialingExpDate'));
+				if ($date instanceof DateTime) {
+				    $data["cExpiredDate"] = $date->format(MYSQL_DATE_TIME);
+				    $data["cDueDate"] = $data["cExpiredDate"];
+				}
 			}
 			
 			if ($data['cHasExpirationDate'] == 'no' && isset($data['ecAFID'])){
 				//Auto-set Expiration Date to: Today + Renewal Time Frame
-				$ti= $data['cRenewalTimeFrameNum'].' '.$data['cRenewalTimeFrameDim'];
 				$today = new DateTime();
-				$today->add(date_interval_create_from_date_string($ti));
-				$data["cExpiredDate"]=$today->format(MYSQL_DATE_TIME);
-				$data["cDueDate"]=$data["cExpiredDate"];
+				cf::addTimeFrameToDate($today, $data['cRenewalTimeFrameNum'], $data['cRenewalTimeFrameDim']);
+				$data["cExpiredDate"] = $today->format(MYSQL_DATE_TIME);
+				$data["cDueDate"] = $data["cExpiredDate"];
 				
-				if ($data['cImportantWhenDocCompleated'] == 'no'){
-					// nothing to do
-				}
-				if ($data['cImportantWhenDocCompleated'] == 'yes'){
-					// Auto-set Expiration Date to: (Document Completion Date) + (Renewal Time Frame)
-					$Date=DateTime::createFromFormat(USER_DATE,$_POST['credentialingComplDate']);
-					//$data["cExpiredDate"]=$Date->format(MYSQL_DATE_TIME);
-					$ti= $data['cRenewalTimeFrameNum'].' '.$data['cRenewalTimeFrameDim'];
-					$Date->add(date_interval_create_from_date_string($ti));
-					$data["cDueDate"] = $Date->format(MYSQL_DATE_TIME);
-					$data["cExpiredDate"]= $data["cDueDate"];
-					//echo '>>>>'.$data["cExpiredDate"].' '.$data["cDueDate"];exit;
+				if ($data['cImportantWhenDocCompleated'] == 'yes' && isset($_POST['credentialingComplDate'])){
+					$Date = val::parseUserDate(val::postValue('credentialingComplDate'));
+					if ($Date instanceof DateTime) {
+					    cf::addTimeFrameToDate($Date, $data['cRenewalTimeFrameNum'], $data['cRenewalTimeFrameDim']);
+					    $data["cDueDate"] = $Date->format(MYSQL_DATE_TIME);
+					    $data["cExpiredDate"] = $data["cDueDate"];
+					}
 				}
 				
 			}

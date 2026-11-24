@@ -19,9 +19,13 @@ class JobModel extends AppModel {
     }
     private static function validateEndDate($name = "jEndDate"){
         if(val::validDate($name)) {
-            $test_date = filter_input(INPUT_POST, $name);
-            if(!empty($test_date)) {
-                $date = DateTime::createFromFormat(USER_DATE, $test_date);
+            $test_date = val::postValue($name);
+            if($test_date !== '') {
+                $date = val::parseUserDate($test_date);
+                if (!($date instanceof DateTime)) {
+                    val::setError($name, "End date must be a valid date.");
+                    return false;
+                }
                 if($date < new DateTime()) {
                     val::setError($name, "End date must be equal or greater than the current date");
                     return false;

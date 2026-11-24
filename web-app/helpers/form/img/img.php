@@ -304,7 +304,7 @@ class img  {
 	   return $res;
 	}
 		
-	final private static function resize_image_core($file, $new_image_file_path, $width, $height, $type = 'thumb', $args = array()){
+	private static function resize_image_core($file, $new_image_file_path, $width, $height, $type = 'thumb', $args = array()){
 		if ($width <= 0 || $height <= 0) return false;
 		
 		$info = getimagesize($file);
@@ -320,11 +320,11 @@ class img  {
 		}
 		
 		if($type == 'width') {
-			$ratio = ($width_old > $width) ? (real)($width/$width_old) : 1 ;			
+			$ratio = ($width_old > $width) ? (float)($width/$width_old) : 1 ;			
 			$final_width = ((int)($width_old * $ratio));
 			$final_height = ((int)($height_old * $ratio));
 		} else if($type == 'height') {
-			$ratio = ($height_old > $height) ? (real)($height/$height_old) : 1 ;			
+			$ratio = ($height_old > $height) ? (float)($height/$height_old) : 1 ;			
 			$final_width = ((int)($width_old * $ratio));
 			$final_height = ((int)($height_old * $ratio));						
 		} else if($type == 'thumb' || $type == 'cut') {
@@ -332,12 +332,12 @@ class img  {
 				, $height, $final_width, $final_height);
 		} else if($type == 'max') {		
 			
-			$ratio = ($width_old > $width) ? (real)($width/$width_old) : 1 ;			
+			$ratio = ($width_old > $width) ? (float)($width/$width_old) : 1 ;			
 			$final_width = ((int)($width_old * $ratio));
 			$final_height = ((int)($height_old * $ratio));
 			
 			//check for images that are still too high
-			$ratio = ($final_height > $height) ? (real)($height/$final_height) : 1 ;
+			$ratio = ($final_height > $height) ? (float)($height/$final_height) : 1 ;
 			$final_width = ((int)($final_width * $ratio));
 			$final_height = ((int)($final_height * $ratio));
 		} else {			

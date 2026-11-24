@@ -95,7 +95,8 @@ class ApplicationController extends AppController
         } else {
             $url = self::ActiveToUrl();
         }
-        $params = array("name" => "Back to " . strtolower(self::$pg["items"]), "url" => $url, "icon" => "fa fa-chevron-circle-left", "args" => array("class" => "btn btn-info"));
+        $itemsLabel = (isset(self::$pg["items"]) && self::$pg["items"] !== '') ? self::$pg["items"] : "applications";
+        $params = array("name" => "Back to " . strtolower($itemsLabel), "url" => $url, "icon" => "fa fa-chevron-circle-left", "args" => array("class" => "btn btn-info"));
         return $params;
     }
 
@@ -103,14 +104,14 @@ class ApplicationController extends AppController
     {
         // Handle all CMD actions first
         if (filter_has_var(INPUT_GET, "cmd")) {
-            $cmd = filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING);
+            $cmd = cf::requestStr(INPUT_GET, "cmd");
             $appId = (int)self::$id;
             $interviewerId = (int)$_SESSION['admin_id'];
 
             // Save new note
             if ($cmd === 'save-note' && filter_has_var(INPUT_POST, 'note')) {
                 $note = db::EscapeStr(
-                    filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING)
+                    cf::requestStr(INPUT_POST, 'note')
                 );
 
                 $noteRound = filter_input(INPUT_POST, 'note_round', FILTER_SANITIZE_NUMBER_INT);
@@ -162,7 +163,7 @@ class ApplicationController extends AppController
             if ($cmd === 'update-note' && filter_has_var(INPUT_POST, 'note')) {
                 $noteId = (int)filter_input(INPUT_POST, 'note_id', FILTER_SANITIZE_NUMBER_INT);
                 $note = db::EscapeStr(
-                    filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING)
+                    cf::requestStr(INPUT_POST, 'note')
                 );
                 $where = RoleHelper::isAdmin()
                     ? "inID = $noteId"
@@ -245,7 +246,7 @@ class ApplicationController extends AppController
             );
             if ((int)$count === 0) {
                 msg::set('You do not have access to this application.', 'error');
-                cf::Redirect(ADMIN . 'applications');
+                cf::Redirect(ADMIN . 'for-interview-applications');
                 exit;
             }
         }
@@ -270,7 +271,7 @@ class ApplicationController extends AppController
 
         if (empty(self::$data["afSalaryType"])) {
             if (filter_has_var(INPUT_POST, "afSalaryType")) {
-                self::$data["afSalaryType"] = filter_input(INPUT_POST, "afSalaryType", FILTER_SANITIZE_STRING);
+                self::$data["afSalaryType"] = cf::requestStr(INPUT_POST, "afSalaryType");
             } else {
                 self::$data["afSalaryType"] = $lists["position"]["pSalaryType"];
             }
@@ -291,6 +292,10 @@ class ApplicationController extends AppController
 
     final static function DetailsSave($lists = array())
     {
+        if (RoleHelper::isInterviewer()) {
+            cf::Redirect(ADMIN . 'application-details?id=' . (int)self::$id);
+            exit;
+        }
         $isEmployee = isset(self::$data["afApplyAsEmployeeID"]);
         $lists["position"] = ApplyFormController::LoadPosition(self::$data["afPID"]);
 
@@ -302,7 +307,7 @@ class ApplicationController extends AppController
 
             CVModel::validateUploadedFiles();
 
-            if (filter_input(INPUT_POST, "afActive", FILTER_SANITIZE_STRING) === "Hired") {
+            if (cf::requestStr(INPUT_POST, "afActive") === "Hired") {
                 $mail = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_EMAIL);
                 $q = "select count(afID) as cnt from apply_forms where afID<>%d and afActive='Hired' and afEmail='%s'";
                 $q = sprintf($q, self::$id, $mail);
@@ -320,8 +325,8 @@ class ApplicationController extends AppController
                 }
 
                 if (!filter_has_var(INPUT_POST, "skip-name-check")) {
-                    $firstName = filter_input(INPUT_POST, "afFirstName", FILTER_SANITIZE_STRING);
-                    $lastName = filter_input(INPUT_POST, "afLastName", FILTER_SANITIZE_STRING);
+                    $firstName = cf::requestStr(INPUT_POST, "afFirstName");
+                    $lastName = cf::requestStr(INPUT_POST, "afLastName");
                     $q = "select count(afID) as cnt from apply_forms where afID<>%d and afActive='Hired' and afFirstName='%s' and afLastName='%s'";
                     if ($isEmployee) {
                         $afID = intval(self::$data["afApplyAsEmployeeID"]);
@@ -350,7 +355,7 @@ class ApplicationController extends AppController
         }
 
         if ($isEmployee) {
-            if (filter_input(INPUT_POST, "afActive", FILTER_SANITIZE_STRING) === "Hired") {
+            if (cf::requestStr(INPUT_POST, "afActive") === "Hired") {
                 db::Save(ApplyFormModel::saveQueries(), self::$id, self::$pg['tbl'], self::__DUMP__);
                 $q = 'update apply_forms set afActive="Change Position" where afID=' . self::$id;
                 db::SQL($q);
@@ -393,7 +398,7 @@ class ApplicationController extends AppController
             }
 
             $fileName = str_replace("{---LiveID---}", $id, ApplyFormModel::IMG_FILENAME);
-            if (filter_has_var(INPUT_POST, "photoCmd") && (filter_input(INPUT_POST, "photoCmd", FILTER_SANITIZE_STRING) === "remove")) {
+            if (filter_has_var(INPUT_POST, "photoCmd") && (cf::requestStr(INPUT_POST, "photoCmd") === "remove")) {
                 $photoFile = "../" . ApplyFormModel::IMG_PATH . $fileName;
                 if (file_exists($photoFile)) {
                     unlink($photoFile);
@@ -403,7 +408,7 @@ class ApplicationController extends AppController
 
             CVModel::processUploadedFiles($id);
 
-            if (filter_input(INPUT_POST, "afActive", FILTER_SANITIZE_STRING) === "Hired") {
+            if (cf::requestStr(INPUT_POST, "afActive") === "Hired") {
                 $mail = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_EMAIL);
                 $key = ProfileModel::generateKey();
 
@@ -432,7 +437,7 @@ class ApplicationController extends AppController
                     ManagerOfficesModel::SaveManagerOffices(self::$id, $ids);
                 }
 
-                $_date = filter_input(INPUT_POST, "afStartDate", FILTER_SANITIZE_STRING);
+                $_date = cf::requestStr(INPUT_POST, "afStartDate");
 
                 $startDate = DateTime::createFromFormat(USER_DATE, $_date);
 
@@ -441,14 +446,20 @@ class ApplicationController extends AppController
                 EmployeeCredentialingModel::AssignEmployeeCredentialings(self::$id, $hiredFor, $startDate);
 
                 $position = PositionModel::dataById($hiredFor);
-                $salary = filter_input(INPUT_POST, "afSalary", FILTER_SANITIZE_STRING);
-                $salaryType = filter_input(INPUT_POST, "afSalaryType", FILTER_SANITIZE_STRING);
+                $salary = cf::requestStr(INPUT_POST, "afSalary");
+                $salaryType = cf::requestStr(INPUT_POST, "afSalaryType") ?? '';
                 $department = DepartmentModel::dataById(filter_input(INPUT_POST, "afDID", FILTER_SANITIZE_NUMBER_INT));
                 $office = CompanyOfficeModel::dataById(filter_input(INPUT_POST, "afCOID", FILTER_SANITIZE_NUMBER_INT));
 
-                FieldHistoryModel::AddHistory("department", $id, $department["dName"], $startDate);
-                FieldHistoryModel::AddHistory("office", $id, $office["coName"], $startDate);
-                FieldHistoryModel::AddHistory("position", $id, $position["pName"], $startDate);
+                if (is_array($department) && isset($department["dName"])) {
+                    FieldHistoryModel::AddHistory("department", $id, $department["dName"], $startDate);
+                }
+                if (is_array($office) && isset($office["coName"])) {
+                    FieldHistoryModel::AddHistory("office", $id, $office["coName"], $startDate);
+                }
+                if (is_array($position) && isset($position["pName"])) {
+                    FieldHistoryModel::AddHistory("position", $id, $position["pName"], $startDate);
+                }
                 FieldHistoryModel::AddHistory("salary", $id, PositionModel::formatSalary($salary) . " " . strtolower($salaryType), $startDate);
 
                 if ($isEmployee) {
@@ -468,13 +479,13 @@ class ApplicationController extends AppController
             // ============================================
             // AUTO-CREATE ADMIN ACCOUNT FOR HR/INTERVIEWER
             // ============================================
-            self::autoCreateAdminForPosition($id, $hiredFor);
+            self::autoCreateAdminForPosition($id, (int)$newHiredForPID);
             // ===========================================
 
-            if (filter_input(INPUT_POST, "afActive", FILTER_SANITIZE_STRING) === "Manually Rejected") {
+            if (cf::requestStr(INPUT_POST, "afActive") === "Manually Rejected") {
                 $mail = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_EMAIL);
-                $firstName = filter_input(INPUT_POST, "afFirstName", FILTER_SANITIZE_STRING);
-                $lastName = filter_input(INPUT_POST, "afLastName", FILTER_SANITIZE_STRING);
+                $firstName = cf::requestStr(INPUT_POST, "afFirstName");
+                $lastName = cf::requestStr(INPUT_POST, "afLastName");
                 $msg = nl2br(sprintf(MAIL_REJECTED_APPLICATION_MSG, $firstName, $lastName));
                 cf::sendMail($mail, MAIL_REJECTED_APPLICATION_SUBJ, $msg, $GLOBALS['EMAIL_MAILER_NAME'], $GLOBALS['EMAIL_MAILER_ADDRESS']);
             }
@@ -482,7 +493,7 @@ class ApplicationController extends AppController
             msg::set(TXT_SAVE_ERROR, "error");
         }
 
-        if (filter_input(INPUT_POST, "afActive", FILTER_SANITIZE_STRING) === "Hired") cf::Redirect('employee-details?id=' . self::$data['afID']);
+        if (cf::requestStr(INPUT_POST, "afActive") === "Hired") cf::Redirect('employee-details?id=' . self::$data['afID']);
         else cf::Redirect(self::getBackUrl()["url"]);
     }
 
@@ -776,14 +787,14 @@ $emails = explode("\n", $row['asValue']);
         $subject = $r['emtSubject'];
         $message = $r['emtMessage'];
         $f = array();
-        $f['FirstName'] = filter_input(INPUT_POST, "afFirstName", FILTER_SANITIZE_STRING);
-        $f['LastName'] = filter_input(INPUT_POST, "afLastName", FILTER_SANITIZE_STRING);
-        $f['StartDate'] = filter_input(INPUT_POST, "afStartDate", FILTER_SANITIZE_STRING);
+        $f['FirstName'] = cf::requestStr(INPUT_POST, "afFirstName");
+        $f['LastName'] = cf::requestStr(INPUT_POST, "afLastName");
+        $f['StartDate'] = cf::requestStr(INPUT_POST, "afStartDate");
         $f['Position'] = $position;
         $manID = filter_input(INPUT_POST, "afRMID",  FILTER_SANITIZE_NUMBER_INT);
         $r = db::PrepareLoadSingleRow('SELECT * FROM apply_forms WHERE afID=' . $manID);
         $f['ManagerName'] = $r['afFirstName'] . ' ' . $r['afLastName'];
-        $compID = filter_input(INPUT_POST, "afCompany", FILTER_SANITIZE_STRING);
+        $compID = cf::requestStr(INPUT_POST, "afCompany");
         $companies = CompaniesModel::GetActiveCompaniesLong();
         $f['CompanyName'] = $companies[$compID];
 
@@ -792,7 +803,7 @@ $emails = explode("\n", $row['asValue']);
         $f['Office'] = $r['coName'];
         $f['CreatePaswordLink'] = $_link;
 
-        $mail = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_STRING);
+        $mail = cf::requestStr(INPUT_POST, "afEmail");
         $subject = self::replaceNames($subject, $f);
         $message = self::replaceNames($message, $f);
 

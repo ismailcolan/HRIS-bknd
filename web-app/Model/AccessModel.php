@@ -37,7 +37,7 @@ class AccessModel extends AppModel {
             if(in_array($C::$data["order-type"], array("pending", "backorder"))){
                 $actions[] = "update";
             } else {
-                if($C::$rq==="details" && filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)!=="trash"){
+                if($C::$rq==="details" && cf::requestStr(INPUT_GET, "cmd")!=="trash"){
                     cf::end("Error: Complete orders has no access to details view.");
                 }
             }
@@ -52,12 +52,12 @@ class AccessModel extends AppModel {
     static function AdminPageHeaderLnk($C){
         $lnk = null;
 
-        if(($C === "ApplicationController") && ($C::$data["afActive"] === "Auto-rejected")) {
+        if(($C === "ApplicationController") && (is_array($C::$data) && ($C::$data["afActive"] ?? null) === "Auto-rejected")) {
             return null;
         }
 		
 
-        if($C==="ApplicationController" && $C::$rq=="summary" && $C::$data["afActive"] !== "Auto-rejected"){
+        if($C==="ApplicationController" && $C::$rq=="summary" && is_array($C::$data) && ($C::$data["afActive"] ?? null) !== "Auto-rejected"){
             $lnk = array(
                 "application-details?id=".$C::$id=>"Edit application"
                 );

@@ -9,7 +9,7 @@ define("WS", "/");
 define("FP", dirname(dirname(__DIR__)) . DS);
 /* Equally is to use $_SERVER["DOCUMENT_ROOT"], but this will not work for //server/project/ url,
  * useful for mobile devices, where the .hosts file editability is not always allowed
- * define("FP", filter_input(INPUT_SERVER, "DOCUMENT_ROOT", FILTER_SANITIZE_STRING) . '/'); */
+ * define("FP", cf::requestStr(INPUT_SERVER, "DOCUMENT_ROOT") . '/'); */
 
 /** @constant APP - App (web-app) directory
  * @filepath <["DOCUMENT_ROOT"]>/web-app/*/

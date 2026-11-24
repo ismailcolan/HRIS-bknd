@@ -9,11 +9,9 @@ class GeneralView extends AppView {
     final static function Edit($data, $pg, $lbls,$args=null){
 		 
 		  $args = self::$fldArgsBase;
-		  if ( isset($_SESSION['general_save_success'])){
-			  $continue=$_SESSION['general_save_success'];
-			  unset($_SESSION['general_save_success']);
+		  if (isset($_SESSION['general_save_success'])) {
+		      unset($_SESSION['general_save_success']);
 		  }
-		  if (! isset($continue)){
         form::codeStyle(true, 1, false);
         form::openTag("div",array("class"=>"form-panel"));
             form::$ofsetIndentsCount = 2;
@@ -166,8 +164,6 @@ class GeneralView extends AppView {
             form::closeTag("form");
             form::codeStyle(true, 1, true);
 			form::closeTag("div",array("class"=>"form-panel"));
-			echo '</div>';
-		  }
 /***************			
 		echo '
 <script language="javascript" type="text/javascript">

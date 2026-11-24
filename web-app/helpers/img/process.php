@@ -10,7 +10,7 @@ class CropPage extends Page {
 			
 	public function uploadAndProcess(){
 		$flag_perfect_image = false;
-        $ctrl=  filter_input(INPUT_GET, 'crtl' ,FILTER_SANITIZE_STRING);
+        $ctrl=  cf::requestStr(INPUT_GET, 'crtl');
 		$file = $_FILES[$ctrl];
 		if(empty($_FILES) || empty($file)) {
 			return;
@@ -103,7 +103,7 @@ class CropPage extends Page {
 		}
 		
 		$img_src = img::get_temp_url_original() ."/". $file_name;		
-		$cn = filter_input(INPUT_GET,'cname',FILTER_SANITIZE_STRING);
+		$cn = cf::requestStr(INPUT_GET, 'cname');
         form::tag('top.showUploadedImage("'.$cn.'","'.$file_name.'","'.$img_src.'","'.img::$setup["inp-thumb-max-height"].'");',"script");
 	}	
 	
@@ -111,7 +111,7 @@ class CropPage extends Page {
 		$width = abs(img::$setup["width"]);
 		$height = abs(img::$setup["height"]);
 		$ctrl_id = 'usrphoto';	
-        $file1 = filter_input(INPUT_GET, 'pd' ,FILTER_SANITIZE_STRING);
+        $file1 = cf::requestStr(INPUT_GET, 'pd');
 		$f_r = explode('-', $file1);
 
 		//security check, you can not update image after 20 min
@@ -180,7 +180,7 @@ class CropPage extends Page {
 	public function processCrop() {
 		$width = abs(img::$setup["width"]);
 		$height = abs(img::$setup["height"]);
-        $file_name = filter_input(INPUT_GET,'pd',FILTER_SANITIZE_STRING);
+        $file_name = cf::requestStr(INPUT_GET, 'pd');
 		$from_file = img::get_temp_folder_before_crop() . $file_name;
 		$to_file = img::get_temp_folder_crop() . $file_name;
         //list($width_uploaded, $height_uploaded, $type_uploaded, $attr_uploaded) = getimagesize(($from_file));
@@ -214,7 +214,7 @@ class CropPage extends Page {
 	}	
 	
 	private function breakError($text){
-		$ctrl = filter_input(INPUT_GET, "cname",FILTER_SANITIZE_STRING);
+		$ctrl = cf::requestStr(INPUT_GET, "cname");
         $errorMsg = is_numeric($text) ? "Unexpected error: {$text}" : $text;
         $script = "top.setFormFieldError(parent.document.getElementById(\"inut-file-".$ctrl."\").form,\"".$ctrl."\",\"".$errorMsg."\");";
         if(img::$setup["crop"]==="fancybox"){
@@ -253,11 +253,11 @@ if(img::$setup["crop"]!=="inline") {
     $page->Header("simple");
 }
 
-if(filter_input(INPUT_GET,'cmd',FILTER_SANITIZE_STRING) == 'prepare') {	
+if(cf::requestStr(INPUT_GET, 'cmd') == 'prepare') {	
 	$page->uploadAndProcess();	
-} else if(filter_input(INPUT_GET,'cmd',FILTER_SANITIZE_STRING) == 'crop' && !filter_has_var(INPUT_POST, 'x1')) {
+} else if(cf::requestStr(INPUT_GET, 'cmd') == 'crop' && !filter_has_var(INPUT_POST, 'x1')) {
 	$page->cropDialog();
-} else if(filter_input(INPUT_GET,'cmd',FILTER_SANITIZE_STRING) == 'crop' && filter_has_var(INPUT_POST, 'x1')) {
+} else if(cf::requestStr(INPUT_GET, 'cmd') == 'crop' && filter_has_var(INPUT_POST, 'x1')) {
 	$page->processCrop();
 }	
 

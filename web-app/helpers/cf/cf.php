@@ -167,8 +167,22 @@ class cf extends cfCore {
 	 * @return	(boolean)				mail() function return value
 	 */
 	public static function sendMail($to = '', $subject = '', $message = '', $from_name = '', $from = '', $return = '', $cc = '', $bcc = ''){
-		if(empty($to)){
+		$to = trim((string)$to);
+		if ($to === '') {
 			return false;
+		}
+		if ($from === '' && !empty($GLOBALS['EMAIL_MAILER_ADDRESS'])) {
+		    $from = $GLOBALS['EMAIL_MAILER_ADDRESS'];
+		} elseif ($from === '' && defined('EMAIL_MAILER_ADDRESS')) {
+		    $from = EMAIL_MAILER_ADDRESS;
+		}
+		if ($from_name === '' && !empty($GLOBALS['EMAIL_MAILER_NAME'])) {
+		    $from_name = $GLOBALS['EMAIL_MAILER_NAME'];
+		} elseif ($from_name === '' && defined('EMAIL_MAILER_NAME')) {
+		    $from_name = EMAIL_MAILER_NAME;
+		}
+		if ($return === '' && $from !== '') {
+		    $return = $from;
 		}
         if(LOCAL){
             $subjectOriginal = $subject;

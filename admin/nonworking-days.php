@@ -36,13 +36,13 @@ $adminSection = new NonWorkingDays();
 $adminSection->HeaderOnly();
  if(!empty($_POST)) $adminSection->Save();
  else {
-	 if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "add") {
+	 if(cf::requestStr(INPUT_GET, "cmd")=== "add") {
 			$adminSection->Add();
 	 }
-	 else if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "edit") {
+	 else if(cf::requestStr(INPUT_GET, "cmd")=== "edit") {
 			$adminSection->Edit();
 	 }
-	 else  if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "delete") {
+	 else  if(cf::requestStr(INPUT_GET, "cmd")=== "delete") {
 			$adminSection->Delete();
 	 }
 	 else $adminSection->Init();

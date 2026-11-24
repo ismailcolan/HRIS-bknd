@@ -317,7 +317,7 @@ select * from (SELECT * FROM `employee_credentialing` LEFT JOIN `credentialings`
                 if ($data["cType"] === "recurring") {
                     val::init("server");
                     if (val::required("credentialingExpDate", "") && val::validDate("credentialingExpDate")) {
-                        $data["ecExpiredDateObj"] = DateTime::createFromFormat(USER_DATE, filter_input(INPUT_POST, "credentialingExpDate", FILTER_SANITIZE_STRING));
+                        $data["ecExpiredDateObj"] = DateTime::createFromFormat(USER_DATE, cf::requestStr(INPUT_POST, "credentialingExpDate"));
                         if ($data["ecExpiredDateObj"]) {
                             $now = new DateTime();
                             if($data["ecExpiredDateObj"] < $now) {
@@ -372,9 +372,8 @@ select * from (SELECT * FROM `employee_credentialing` LEFT JOIN `credentialings`
     public static function AddRecord($afID, $data, $skipCheck = false) {
 	
 		if ($data['cHasExpirationDate'] =='no') {
-			$ti=  $data['cRenewalTimeFrameNum'].' '.$data['cRenewalTimeFrameDim'];		
 			$date = new DateTime();
-			$date->add(date_interval_create_from_date_string($ti));
+			cf::addTimeFrameToDate($date, $data['cRenewalTimeFrameNum'], $data['cRenewalTimeFrameDim']);
 			$data["ecExpiredDate"] = $date->format(MYSQL_DATE_TIME); 
 			$expDate = strtotime($data["ecExpiredDate"], time());
 			$timeframe = $expDate;

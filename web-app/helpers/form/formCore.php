@@ -75,7 +75,7 @@ class formCore {
         if(substr($name,-3)==self::GET_OUTPUT_FUNC_SUFFIX){
 			//echo '>>>'.substr($name,0,-3);
             self::$output = "";
-            forward_static_call_array(array("static",substr($name,0,-3)), $arguments);
+            forward_static_call_array(array(static::class, substr($name,0,-3)), $arguments);
             $out = self::$output;
             static::$output = false;
             return $out;
@@ -102,8 +102,13 @@ class formCore {
             $arguments = array(" ",array("class"=>"clearfix"));
             $name="div";
         } else if ($action==="close"){
-            //Extracting the Close repeater
-            $arguments = (isset($arguments[0]) && abs($arguments[0])) > 0 ? array($arguments[0]) : array();
+            if (isset($arguments[0]) && is_array($arguments[0])) {
+                $arguments = array();
+            } else if (isset($arguments[0]) && is_numeric($arguments[0]) && abs((int)$arguments[0]) > 0) {
+                $arguments = array((int)$arguments[0]);
+            } else {
+                $arguments = array();
+            }
         }
         
         if ($action !== false){
@@ -138,6 +143,7 @@ class formCore {
     static function link($hrefAttribute = "", $innerHtml = "", $args = array()) {
 		
         $hrefAttribute = empty($hrefAttribute) ? "javascript:void(0);" : $hrefAttribute;
+        $innerHtml = (string)($innerHtml ?? '');
         if (self::$ofsetIndentsCount > 0) {
             $innerHtml = str_replace("\n", self::codeOfset(self::$ofsetIndentsCount), $innerHtml);
         }
@@ -154,6 +160,7 @@ class formCore {
      *  @param arr $args - tag attributes */
     static function tag($innerHtml = "", $tag = "", $args = array()) {
 	;
+        $innerHtml = (string)($innerHtml ?? '');
         if (self::$ofsetIndentsCount > 0) {
             $innerHtml = str_replace("\n", "\n".self::codeOfset(self::$ofsetIndentsCount), $innerHtml);
         }
@@ -194,7 +201,10 @@ class formCore {
      *  @param str $tag
      *  @param int $closeRepeater */
     static function closeTag($tag = "", $closeRepeater = 1) {
-        $closeRepeater = abs($closeRepeater) > 0 ? $closeRepeater : 1;
+        if (is_array($closeRepeater)) {
+            $closeRepeater = 1;
+        }
+        $closeRepeater = (is_numeric($closeRepeater) && abs((int)$closeRepeater) > 0) ? (int)$closeRepeater : 1;
         if($tag != "script"){
             self::processBefore();
         }

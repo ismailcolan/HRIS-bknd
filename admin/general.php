@@ -48,7 +48,9 @@ if(intval(AppModel::$admin["waaAFID"]) > 0) {
 }
 
 $adminSection->Header();
-if (!empty($_POST['ADMIN_MAILS'])) $adminSection->SaveAdminMails();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['save-btn']) || isset($_POST['MAIN_ADMIN_EMAIL']) || isset($_POST['ADMIN_MAILS']))) {
+    $adminSection->SaveAdminMails();
+}
 msg::get();
 $adminSection->EditAdminMails();
 $adminSection->Footer();

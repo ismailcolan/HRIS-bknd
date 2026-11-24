@@ -78,9 +78,9 @@ if (in_array($Section::$rq, array("hired", "inactive-hired", "manager-hired"))) 
 } else if ($Section::$rq === "password") {
     $Section->SetPassword();
 } else if ($Section::$rq === "details") {
-    if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "trash") {
+    if (cf::requestStr(INPUT_GET, "cmd") === "trash") {
         $Section->Delete();
-    } else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "restore") {
+    } else if (cf::requestStr(INPUT_GET, "cmd") === "restore") {
         $Section->Reactivate();
     } else if (filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
         $Section->DetailsSave();

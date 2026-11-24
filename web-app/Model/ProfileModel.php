@@ -46,7 +46,7 @@ class ProfileModel extends ApplyFormModel
     {
         if (!filter_has_var(INPUT_POST, $name)) return true;
         if (val::required($name, "Please fill out the password.")) {
-            $pass = filter_input(INPUT_POST, $name, FILTER_SANITIZE_STRING);
+            $pass = cf::requestStr(INPUT_POST, $name);
             $token = cf::decrypt(AccessModel::$usr["afToken"], $pass);
             if (empty($token)) {
                 val::setError("passOld", "Invalid password!");
@@ -81,7 +81,7 @@ class ProfileModel extends ApplyFormModel
         }
 
         if ($check) {
-            $new = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+            $new = cf::requestStr(INPUT_POST, "pass");
             if($usrID === null) {
                 $usrID = AppModel::$usr["afID"];
             }
@@ -134,8 +134,8 @@ class ProfileModel extends ApplyFormModel
 
         val::throwServerRunError();
 
-        $email = db::EscapeStr(filter_input(INPUT_POST, "email", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
-        $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        $email = db::EscapeStr(cf::requestStr(INPUT_POST, "email"));
+        $pass = cf::requestStr(INPUT_POST, "pass");
 		
 		 $today = new DateTime();
          $q = 'select * from apply_forms where afEmail="' . $email . '" and afActive="Hired"
@@ -180,7 +180,7 @@ class ProfileModel extends ApplyFormModel
     public static function checkPasswordKey()
     {
         if (filter_has_var(INPUT_GET, "key")) {
-            $key = filter_input(INPUT_GET, "key", FILTER_SANITIZE_STRING);
+            $key = cf::requestStr(INPUT_GET, "key");
 
             if (!LOCAL and strlen($key) != 50) {
                 return false;
@@ -198,8 +198,8 @@ class ProfileModel extends ApplyFormModel
         $afID = self::checkPasswordKey();
         if ($afID) {
             if (self::ValidateChangePassword()) {
-                $key = filter_input(INPUT_GET, "key", FILTER_SANITIZE_STRING);
-                $pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING);
+                $key = cf::requestStr(INPUT_GET, "key");
+                $pass = cf::requestStr(INPUT_POST, "pass");
                 self::savePassword($afID, $pass);
                 return true;
             }
@@ -254,9 +254,9 @@ class ProfileModel extends ApplyFormModel
             return false;
         }
 
-        $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_STRING);
+        $email = cf::requestStr(INPUT_POST, "email");
         if (empty($email)) {
-            $email = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_STRING);
+            $email = cf::requestStr(INPUT_POST, "afEmail");
         }
 		
 		
@@ -359,7 +359,7 @@ class ProfileModel extends ApplyFormModel
        
 		$fileName = str_replace("{---LiveID---}", $id, ApplyFormModel::IMG_FILENAME);
         if (filter_has_var(INPUT_POST, "photoCmd") && 
-			(filter_input(INPUT_POST, "photoCmd", FILTER_SANITIZE_STRING) === "remove")) {
+			(cf::requestStr(INPUT_POST, "photoCmd") === "remove")) {
            
 			$photoFile = "" . ApplyFormModel::IMG_PATH . $fileName;
             if (file_exists($photoFile)) {

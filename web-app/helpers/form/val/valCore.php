@@ -165,33 +165,54 @@ class valCore {
         }
     }
 
-    public static function validDate($name, $msg = "' %s ' is not a valid date value.<br>Valid example: 12/30/1990") {
-         
-		  
-		  if (self::$runat == "server") {
-            $test_date = filter_input(INPUT_POST, $name);
-			
-            if(empty($test_date)) {
-                return true;
-            }
-			
-            $msg = sprintf($msg, $test_date, USER_DATE);
-            $date = DateTime::createFromFormat(USER_DATE, $test_date);
-            $date_errors = DateTime::getLastErrors();
-            if ($date_errors['warning_count'] + $date_errors['error_count'] > 0) {
+    public static function postValue($name)
+    {
+        if (isset($_POST[$name]) && is_scalar($_POST[$name])) {
+            return trim((string)$_POST[$name]);
+        }
+        $v = filter_input(INPUT_POST, $name);
+        if ($v === null || $v === false) {
+            return '';
+        }
+        return trim((string)$v);
+    }
 
-                $date = DateTime::createFromFormat(GLOBAL_PHP_DATE_ALT, $test_date);
-                $date_errors = DateTime::getLastErrors();
-                if ($date_errors['warning_count'] + $date_errors['error_count'] > 0) {
-                    self::setError($name, $msg);
-					
-                    return false;
-                } else {
-                    return true;
+    public static function parseUserDate($test_date)
+    {
+        $test_date = trim((string)$test_date);
+        if ($test_date === '') {
+            return null;
+        }
+        $formats = array(USER_DATE, GLOBAL_PHP_DATE_ALT, 'n/j/Y', 'm/d/Y');
+        foreach (array_unique($formats) as $fmt) {
+            $date = DateTime::createFromFormat('!' . $fmt, $test_date);
+            if ($date instanceof DateTime) {
+                $errors = DateTime::getLastErrors();
+                if (is_array($errors) && ($errors['warning_count'] + $errors['error_count'] > 0)) {
+                    continue;
                 }
-            } else {
+                return $date;
+            }
+        }
+        return null;
+    }
+
+    public static function validDate($name, $msg = "' %s ' is not a valid date value.<br>Valid example: 12/30/1990") {
+        if (self::$runat == "client") {
+            self::setJsVal($name, array("data-callback" => "validUserDate"), $msg);
+            return true;
+        }
+        if (self::$runat == "server") {
+            $test_date = self::postValue($name);
+            if ($test_date === '') {
                 return true;
             }
+            $msg = sprintf($msg, $test_date, USER_DATE);
+            if (self::parseUserDate($test_date) instanceof DateTime) {
+                return true;
+            }
+            self::setError($name, $msg);
+            return false;
         }
     }
 

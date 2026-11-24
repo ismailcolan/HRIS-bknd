@@ -66,7 +66,7 @@ class dbCore {
 	
 	
 	public static function SwitchToReal(){
-		$customer1 = filter_input(INPUT_POST, "customer", FILTER_SANITIZE_STRING);
+		$customer1 = cf::requestStr(INPUT_POST, "customer");
 		$customer = strtoupper(trim(preg_replace('/\s+/S', " ", $customer1)));
 		$customer = str_replace('_',' ',$customer);
 		self::SwitchToMain();
@@ -308,13 +308,6 @@ class dbCore {
     static function EscapeStr($str, $addQuotes = false, $stripTags = true) {
         if($stripTags === true){
             $str = strip_tags($str);
-        }
-        if (get_magic_quotes_gpc()) {
-                if (ini_get('magic_quotes_sybase')) {
-                        $str = str_replace("''", "'", $str);
-                } else {
-                        $str = stripslashes($str);
-                }
         }
         $str = iconv(mb_detect_encoding($str), 'UTF-8', $str);
         $str = self::FastEscStr($str);

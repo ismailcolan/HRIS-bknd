@@ -89,7 +89,7 @@ class FakeClass extends PageFront{
 
 $aS = new FakeClass();
 
-$cmd=filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING);
+$cmd=cf::requestStr(INPUT_GET, "cmd");
 ob_start();
 $aS->ImgsSetup();
 $aS->HTMLHeader();

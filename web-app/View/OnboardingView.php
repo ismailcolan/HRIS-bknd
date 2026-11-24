@@ -176,7 +176,7 @@ class OnboardingView extends AppView
             $lbls[($f = $pg["pfx"] . "ApplayTo")] . ":",
             $f,
             array('both'=>'Both','terminated'=>'Terminated','retired'=>'Retired'),
-            isset($data[$f]) ? $data[$f] : filter_input(INPUT_POST, $f, FILTER_SANITIZE_STRING),
+            isset($data[$f]) ? $data[$f] : cf::requestStr(INPUT_POST, ),
             $args
 			); 
 			**********/
@@ -590,7 +590,7 @@ class OnboardingView extends AppView
             "",
             $f,
             $tfDims,
-            isset($data[$f]) ? $data[$f] : filter_input(INPUT_POST, $f, FILTER_SANITIZE_STRING),
+            isset($data[$f]) ? $data[$f] : cf::requestStr(INPUT_POST, $f, 'day(s)'),
             ["class" => "form-control"]
         );
         form::closeDiv(["class" => "col-sm-3 col-md-2 col-lg-2"]);
@@ -962,7 +962,7 @@ class OnboardingView extends AppView
 					       self::getSelectTask($data),
                         filter_input(INPUT_GET, "task{$idx}", FILTER_SANITIZE_NUMBER_INT), 
 						    $args + array("skip-empty" => 1));
-        form::inpField("Employee:", "name{$idx}", filter_input(INPUT_GET, "name{$idx}", FILTER_SANITIZE_STRING), $args);
+        form::inpField("Employee:", "name{$idx}", cf::requestStr(INPUT_GET, "name{$idx}"), $args);
 
         form::inpSaveCancel(null, $btnargs, "Filter");
 

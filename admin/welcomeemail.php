@@ -70,7 +70,7 @@ msg::prepare();
 table::prepare();
 $adminSection = new WelcomeEmail((int)filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT));
 
-if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "templ") {
+if(cf::requestStr(INPUT_GET, "cmd")=== "templ") {
        $adminSection->getTextOfTemplate();
 	   exit;
 }
@@ -83,9 +83,9 @@ if(in_array($adminSection::$rq, array("list", "inactive-list"))) {
     $adminSection->Summary();
 }  else if($adminSection::$rq === "details") {
 	
-    if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "trash") {
+    if(cf::requestStr(INPUT_GET, "cmd")=== "trash") {
         WelcomeEmailController::DeleteTemplate();
-	 }  else if(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING)=== "restore") {
+	 }  else if(cf::requestStr(INPUT_GET, "cmd")=== "restore") {
         $adminSection->Reactivate();
     } else if(filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
         $adminSection->DetailsSave();

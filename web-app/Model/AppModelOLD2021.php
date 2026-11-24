@@ -321,7 +321,7 @@ class AppModel extends db
         return $qList;
     }
 
-    private final static function convertFieldsArrToSaveDataArr($dataArr, $tableData = array())
+    private static function convertFieldsArrToSaveDataArr($dataArr, $tableData = array())
     {
 		 
         foreach ($dataArr as $f) {

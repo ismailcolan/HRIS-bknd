@@ -970,7 +970,7 @@ class EmployeeView extends ApplicationView
 								
 //echo '<pre>';print_r($creds);echo '</pre>';
 
-        $onboardingActive = (filter_has_var(INPUT_GET, "cmd") && filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "undo");
+        $onboardingActive = (filter_has_var(INPUT_GET, "cmd") && cf::requestStr(INPUT_GET, "cmd") === "undo");
 
         if ($onboardingActive) {
             form::Tag("Profile", "button", ["type" => "button", "id" => "employee_record_button", "class" => "btn btn-secondary"]);
@@ -988,7 +988,7 @@ class EmployeeView extends ApplicationView
         }
 		
 		
-		$offboardingActive = (filter_has_var(INPUT_GET, "cmd") && filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "undo");
+		$offboardingActive = (filter_has_var(INPUT_GET, "cmd") && cf::requestStr(INPUT_GET, "cmd") === "undo");
 
       
 		if ($data["afActive"]=='Terminated' || !empty($data["afDateLeaving"])) {
@@ -2028,7 +2028,9 @@ echo '
                     $list["positions"][0] = "Not sure";
                 } else {
                     $missed = PositionModel::dataById($data[$f]);
-                    $list["positions"][$data[$f]] = $missed["pName"];
+                    $list["positions"][$data[$f]] = (is_array($missed) && isset($missed["pName"]))
+                        ? $missed["pName"]
+                        : "Unknown position (#{$data[$f]})";
                 }
             }
             $list["positions"] = [$data[$f] => $list["positions"][$data[$f]]];
@@ -2378,7 +2380,7 @@ echo '
         return $imgSrc;
     }
 
-    public static function RenderFrontEmployeeList($emplList = [], $totalCnt = 0, $currentPage = 1, $pageSize)
+    public static function RenderFrontEmployeeList($emplList, $totalCnt, $currentPage, $pageSize)
     {
         form::openDiv(array('class' => "content bg-white"));
         form::openDiv(array('class' => "row"));
@@ -2467,9 +2469,9 @@ echo '
         form::openTag("form", array("method" => "GET", "enctype" => "multipart/form-data", "validate" => true, 
 		"class" => "form-horizontal"));
 
-        form::inpField("First Name", "firstname", filter_input(INPUT_GET, "firstname", FILTER_SANITIZE_STRING), $args);
+        form::inpField("First Name", "firstname", cf::requestStr(INPUT_GET, "firstname"), $args);
 
-        form::inpField("Last Name", "lastname", filter_input(INPUT_GET, "lastname", FILTER_SANITIZE_STRING), $args);
+        form::inpField("Last Name", "lastname", cf::requestStr(INPUT_GET, "lastname"), $args);
 
         form::inpSelect("Position", "position", array("-1" => "Any") + PositionModel::AllActiveKeyName(), filter_input(INPUT_GET, "position", FILTER_SANITIZE_NUMBER_INT), $args + array("skip-empty" => 1));
 
@@ -2484,13 +2486,13 @@ echo '
         form::closeDiv(array("class" => "row"));
     }
 
-    public static function RenderPager($totalCnt = 1, $currentPage = 1, $pageSize)
+    public static function RenderPager($totalCnt, $currentPage, $pageSize)
     {
         $query = [];
         $fields = ["firstname", "lastname", "position", "office"];
         foreach ($fields as $field) {
             if (filter_has_var(INPUT_GET, $field)) {
-                $query[] = $field . "=" . filter_input(INPUT_GET, $field, FILTER_SANITIZE_STRING);
+                $query[] = $field . "=" . cf::requestStr(INPUT_GET, );
             }
         }
         $paging = new paging($totalCnt, $currentPage, $pageSize);

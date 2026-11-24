@@ -140,7 +140,7 @@ $args = self::$fldArgsBase;
             $f,
             PositionModel::AllActiveKeyName(null, true),
             empty($data[$f]) ? [] : $data[$f],
-            $args1 + array("type" => "checkbox", "id" > "onboarding_positions")
+            $args1 + array("type" => "checkbox", "id" => "credentialing_positions")
         );
 		
 		if ($data['cNotApplForSomeEmployees']=="yes") $checked='checked'; else $checked='';
@@ -189,7 +189,7 @@ $args = self::$fldArgsBase;
 //            " ",
 //            $f,
 //            $tfDims,
-//            isset($data[$f]) ? $data[$f] : filter_input(INPUT_POST, $f, FILTER_SANITIZE_STRING),
+//            isset($data[$f]) ? $data[$f] : cf::requestStr(INPUT_POST, ),
 //            $args
 //        );
 
@@ -219,7 +219,7 @@ $args = self::$fldArgsBase;
             "",
             $f,
             $tfDims,
-            isset($data[$f]) ? $data[$f] : filter_input(INPUT_POST, $f, FILTER_SANITIZE_STRING),
+            isset($data[$f]) ? $data[$f] : cf::requestStr(INPUT_POST, $f, 'day(s)'),
             ["class" => "form-control"]
         );
         form::closeDiv(["class" => "col-sm-3 col-md-2 col-lg-2"]);
@@ -264,7 +264,7 @@ $args = self::$fldArgsBase;
             "",
             $f,
             $tfDims,
-            isset($data[$f]) ? $data[$f] : filter_input(INPUT_POST, $f, FILTER_SANITIZE_STRING),
+            isset($data[$f]) ? $data[$f] : cf::requestStr(INPUT_POST, $f, 'day(s)'),
             ["class" => "form-control"]
         );
         form::closeDiv(["class" => "col-sm-3 col-md-2 col-lg-2"]);

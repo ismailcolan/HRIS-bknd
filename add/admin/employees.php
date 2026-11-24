@@ -82,11 +82,11 @@ if ($adminSection::$rq == 'delete-employee' && isset($_GET['deid'] )){
 
 if ($adminSection::$rq == 'admin-mass-task'){$adminSection->AdminMassTask();}
 
-if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "connect-profiles") {
+if (cf::requestStr(INPUT_GET, "cmd") === "connect-profiles") {
         $adminSection->ConnectProfiles();
 }
 
-if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "ask_no_more_connect") {
+if (cf::requestStr(INPUT_GET, "cmd") === "ask_no_more_connect") {
         $adminSection->AskNoMoreConnect();
 }
 
@@ -109,24 +109,24 @@ else if (in_array($adminSection::$rq, array("hired", "inactive-hired", "manager-
 } else if ($adminSection::$rq === "password") {
     $adminSection->SetPassword();
 } else if ($adminSection::$rq === "details") {
-	if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "terminate") {
+	if (cf::requestStr(INPUT_GET, "cmd") === "terminate") {
         $adminSection->TerminateEmployee();
-   }else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "undo-sign-doc") {
+   }else if (cf::requestStr(INPUT_GET, "cmd") === "undo-sign-doc") {
         $adminSection->UndoSignDocEmployee();
 	}else 
-	if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "view-docs") {
+	if (cf::requestStr(INPUT_GET, "cmd") === "view-docs") {
         $adminSection->ViewDocsToSign();
     }
-	else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "undo-terminate") {
+	else if (cf::requestStr(INPUT_GET, "cmd") === "undo-terminate") {
         $adminSection->UndoTerminateEmployee();
     }
 	
-	else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "terminate-today") {
+	else if (cf::requestStr(INPUT_GET, "cmd") === "terminate-today") {
         $adminSection->TerminateTodayEmployees();
     }
-    else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "trash") {
+    else if (cf::requestStr(INPUT_GET, "cmd") === "trash") {
         $adminSection->Delete();
-    } else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "restore") {
+    } else if (cf::requestStr(INPUT_GET, "cmd") === "restore") {
         $adminSection->Reactivate();
     } else if (!isset($_GET['action']) && (filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST')) {
        $adminSection->DetailsSave();

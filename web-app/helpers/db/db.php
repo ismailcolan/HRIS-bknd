@@ -33,6 +33,9 @@ class db extends dbCore {
 		$condition = static::$dt["key"]."=".(int)$id;
 		
 		$res = static::data($condition);
+        if ($res === null || !is_array($res)) {
+            return null;
+        }
 
         if(!is_null($data = (count($res) !== 1 ? null : $res[0])) && (bool)$allLangs){
 			$data = webValuesModel::dataAddValuesTranslations($data, static::$dt);
@@ -129,7 +132,7 @@ class db extends dbCore {
 
             if($dump===true && $multyCall===false){ die("<strong>".__METHOD__."</strong>: ".($errorFlag===false?"<strong style=\"color:green\">Successfull save</strong> (No errors)":"<strong style=\"color:red\">Error!</strong>")); }
         if($errorFlag === false && $multyCall===false){ db::Commit(); }
-        return (boolean) $errorFlag === false;
+        return (bool) $errorFlag === false;
     }
 
     

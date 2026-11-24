@@ -252,7 +252,7 @@ class DaysOffFrontController extends AppController{
 							$subject, 
 							$mail_body, 
 							$GLOBALS['EMAIL_MAILER_NAME'], 
-							$GLOBALS['EMAIL_MAILER_ADDRESS']; 
+							$GLOBALS['EMAIL_MAILER_ADDRESS']
 				);
 			}
 			else {

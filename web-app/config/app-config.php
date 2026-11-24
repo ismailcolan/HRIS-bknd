@@ -405,22 +405,12 @@ $CredentialingsToBeSkippedBecauseUploaded = array();
 
 function SkipUloadedCredentials ($UnprocessedRecords)
 {
-    
-        // generate string used to determine duplicates
-    foreach ($UnprocessedRecords as $SingleRow)
-    {
-        //print_r($SingleRow);
-        
-            // this IF below is NOT part of the logic to remove duplicate non-uploaded
-            
-        if ($SingleRow["cType"] == "one-time") // the logic must be applied only to ONE-TIME credentialings
-        {
-            array_push($ToBeSorted, sprintf('%0' . $PREF_LEN . 'd', $SingleRow["ecCID"]) . ":" . sprintf('%0' . $PREF_LEN . 'd', $SingleRow["ecID"]) . ":" . $SingleRow["ecFileName"]);
-        }
-    }
-    
     $ToBeSorted = array ();
     $PREF_LEN = 10; // Prefix fixed length
+
+    if (!is_array($UnprocessedRecords)) {
+        return $UnprocessedRecords;
+    }
 
     foreach ($UnprocessedRecords as $SingleRow)
     {

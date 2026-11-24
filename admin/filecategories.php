@@ -73,9 +73,9 @@ if (in_array($adminSection::$rq, array("list"))) {
 	else if (isset($_POST["files-move-btn"])) {
 		$adminSection->moveFilesToCategory();
     }
-	else if (in_array(filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING), ["trash", "alert"]) || filter_has_var(INPUT_POST, "move-btn")) {
+	else if (in_array(cf::requestStr(INPUT_GET, "cmd"), ["trash", "alert"]) || filter_has_var(INPUT_POST, "move-btn")) {
 		$adminSection->Delete();
-    } else if (filter_input(INPUT_GET, "cmd", FILTER_SANITIZE_STRING) === "restore") {
+    } else if (cf::requestStr(INPUT_GET, "cmd") === "restore") {
 		$adminSection->Reactivate();
     } else if (filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
 		$adminSection->DetailsSave();

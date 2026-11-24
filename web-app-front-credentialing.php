@@ -68,8 +68,8 @@ if($page::$rq === "pending") {
 			
             EmployeeCredentialingModel::SetCredentialRenewalDate(
                 filter_input(INPUT_POST, "ecID", FILTER_SANITIZE_NUMBER_INT),
-                filter_input(INPUT_POST, "newRenewalDate", FILTER_SANITIZE_STRING),
-				   filter_input(INPUT_POST, "emptyecFileName", FILTER_SANITIZE_STRING)
+                cf::requestStr(INPUT_POST, "newRenewalDate"),
+				   cf::requestStr(INPUT_POST, "emptyecFileName")
             );
         }
         $page->Credentialings();

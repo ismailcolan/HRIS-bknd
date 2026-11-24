@@ -182,13 +182,6 @@ class dbCore {
         if($stripTags === true){
             $str = strip_tags($str);
         }
-        if (get_magic_quotes_gpc()) {
-                if (ini_get('magic_quotes_sybase')) {
-                        $str = str_replace("''", "'", $str);
-                } else {
-                        $str = stripslashes($str);
-                }
-        }
         $str = iconv(mb_detect_encoding($str), 'UTF-8', $str);
         $str = self::FastEscStr($str);
         return $addQuotes === true ? "\"" . $str . "\"" : $str;

@@ -217,7 +217,11 @@ class EmployeeModel extends ApplyFormModel {
 			if (val::validDate('afDateLeaving', "Invalid Date Leaving format. Valid example: 12/30/1990"))
 			{
 			
-				$date = DateTime::createFromFormat(USER_DATE,$_POST['afDateLeaving']);
+				$date = val::parseUserDate(val::postValue('afDateLeaving'));
+				if (!($date instanceof DateTime)) {
+				    val::setError('afDateLeaving', "Invalid Date Leaving format. Valid example: 12/30/1990.");
+				    return;
+				}
 				$today = new DateTime();
 				$after3monts = new DateTime(); 
 				$after3monts->add(date_interval_create_from_date_string('3 months'));

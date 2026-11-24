@@ -183,8 +183,8 @@ class ApplyFormController extends AppController {
             if(!$isLogged) {
                 if(!filter_has_var(INPUT_GET, "skip-check")) {
                     $email = filter_input(INPUT_POST, "afEmail", FILTER_SANITIZE_EMAIL);
-                    $fName = filter_input(INPUT_POST, "afFirstName", FILTER_SANITIZE_STRING);
-                    $lName = filter_input(INPUT_POST, "afLastName", FILTER_SANITIZE_STRING);
+                    $fName = cf::requestStr(INPUT_POST, "afFirstName");
+                    $lName = cf::requestStr(INPUT_POST, "afLastName");
 					
 						
                     $q = sprintf('select * from apply_forms where afActive = "Hired" 

@@ -56,8 +56,8 @@ class WebappSuperAdminController extends AppController {
     static function LoginProcess(){ 
 	  //  print_r($_POST);exit;
 		db::SwitchToMain();
-		$user = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
-		$pass = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING);
+		$user = cf::requestStr(INPUT_POST, "user");
+		$pass = cf::requestStr(INPUT_POST, "pass");
 	
 		if($user == '' && $pass == ''){
 			msg::set('Please enter both username and password.','error');

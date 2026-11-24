@@ -92,5 +92,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 # ---------------------------------------------
 
 <FilesMatch \.php$>
-        SetHandler proxy:fcgi://humanroadferndaleroadcom-php56
+        SetHandler proxy:fcgi://humanroadferndaleroadcom-php85
 </FilesMatch>

@@ -40,14 +40,26 @@ class val extends valCore {
     public static function date($name, $format, $msg){
         $request = filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST' ? INPUT_POST : INPUT_GET;
         $str_dt = filter_input($request, $name);
-        $date = DateTime::createFromFormat($format, $str_dt);
-        $isValid = $date && DateTime::getLastErrors()["warning_count"] == 0 && DateTime::getLastErrors()["error_count"] == 0;
-        if($isValid) {
-            return true;
-        } else {
-            self::setError($name, $msg);
-            return false;
+        if ($str_dt === null) {
+            $source = ($request === INPUT_POST) ? $_POST : $_GET;
+            $str_dt = isset($source[$name]) ? $source[$name] : '';
         }
+        $str_dt = trim((string)$str_dt);
+        if ($str_dt === '') {
+            return true;
+        }
+        $date = DateTime::createFromFormat('!' . $format, $str_dt);
+        if (!($date instanceof DateTime) && defined('GLOBAL_PHP_DATE_ALT')) {
+            $date = DateTime::createFromFormat('!' . GLOBAL_PHP_DATE_ALT, $str_dt);
+        }
+        if ($date instanceof DateTime) {
+            $dateErrors = DateTime::getLastErrors();
+            if (!is_array($dateErrors) || ($dateErrors["warning_count"] + $dateErrors["error_count"] === 0)) {
+                return true;
+            }
+        }
+        self::setError($name, $msg);
+        return false;
     }
 
     public static function requireImg($name){
@@ -74,11 +86,13 @@ class val extends valCore {
 	}
 	
 	public static function convDate($FROM_format,$TO_format,$d){
-       if ($d=='0000-00-00' || $d=='0000-00-00 00-00-00') return '';
+       if ($d === null || $d === '' || $d=='0000-00-00' || $d=='0000-00-00 00-00-00') return '';
 	
-		$date = DateTime::createFromFormat($FROM_format,$d);
-		
-		if (!$date) return '';
+		$date = DateTime::createFromFormat('!' . $FROM_format, trim((string)$d));
+		if (!($date instanceof DateTime) && method_exists('val', 'parseUserDate')) {
+		    $date = val::parseUserDate($d);
+		}
+		if (!($date instanceof DateTime)) return '';
 
 		return $date->format($TO_format);
 	}

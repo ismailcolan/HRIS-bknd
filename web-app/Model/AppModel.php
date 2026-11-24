@@ -230,7 +230,7 @@ class AppModel extends db
      //$res=array_key_exists($url, $triggers) ? $triggers[$url] : $url;
 	 //echo $res;exit;
 
-		 cf::$rq["class"] = array_key_exists($url, $triggers) ? $triggers[$url] : $url;
+		 cf::$rq["class"] = ($url !== null && $url !== '' && array_key_exists($url, $triggers)) ? $triggers[$url] : $url;
 		 
         return cf::$rq["class"] ;
     }
@@ -321,12 +321,12 @@ class AppModel extends db
         return $qList;
     }
 
-    private final static function convertFieldsArrToSaveDataArr($dataArr, $tableData = array())
+    private static function convertFieldsArrToSaveDataArr($dataArr, $tableData = array())
     {
 //echo '<pre>';print_r(static::$postOverrided);exit;
         foreach ($dataArr as $f) {
             if($f == 'afVacationDaysLastChanged'){
-            $tableData[] = "`{$f}`=".'"'.$_POST[$f].'"';
+            $tableData[] = "`{$f}`=".'"'.($_POST[$f] ?? '').'"';
             }
             else if (isset(static::$postOverrided) && isset(static::$postOverrided[$f])) {
 				//echo static::$postOverrided[$f].'<br>';

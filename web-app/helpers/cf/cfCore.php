@@ -78,13 +78,75 @@ class cfCore {
 		//print_r(self::$pageHeadTagContent);
     }
     
+    /**
+     * Read a scalar request value (replacement for deprecated FILTER_SANITIZE_STRING).
+     *
+     * @param int $input INPUT_GET, INPUT_POST, etc.
+     * @param string $key Parameter name
+     * @param string|null $default Value when missing or non-scalar
+     * @return string|null
+     */
+    final static public function requestStr($input, $key, $default = null) {
+        if (filter_has_var($input, $key)) {
+            $v = filter_input($input, $key, FILTER_UNSAFE_RAW);
+            if ($v !== null && $v !== false && !is_array($v)) {
+                return trim((string)$v);
+            }
+        }
+        $source = null;
+        if ($input === INPUT_POST && array_key_exists($key, $_POST)) {
+            $source = $_POST[$key];
+        } elseif ($input === INPUT_GET && array_key_exists($key, $_GET)) {
+            $source = $_GET[$key];
+        } elseif ($input === INPUT_SERVER && array_key_exists($key, $_SERVER)) {
+            $source = $_SERVER[$key];
+        }
+        if (is_array($source)) {
+            return $default;
+        }
+        return $source !== null ? trim((string)$source) : $default;
+    }
+
+    /**
+     * DateInterval from credentialing time-frame fields (PHP 8 rejects "1 day(s)" strings).
+     */
+    final static public function timeFrameInterval($num, $dim)
+    {
+        $num = max(1, (int)$num);
+        switch ((string)$dim) {
+            case 'day(s)':
+                return new DateInterval('P' . $num . 'D');
+            case 'week(s)':
+                return new DateInterval('P' . $num . 'W');
+            case 'month(s)':
+                return new DateInterval('P' . $num . 'M');
+            case 'year(s)':
+                return new DateInterval('P' . $num . 'Y');
+        }
+        $spec = $num . ' ' . preg_replace('/\(s\)/', 's', (string)$dim);
+        $interval = date_interval_create_from_date_string($spec);
+        return ($interval instanceof DateInterval) ? $interval : null;
+    }
+
+    final static public function addTimeFrameToDate(DateTime $date, $num, $dim)
+    {
+        $interval = self::timeFrameInterval($num, $dim);
+        if ($interval instanceof DateInterval) {
+            $date->add($interval);
+        }
+        return $date;
+    }
+
     /** Description: Redirects the visitor
      *  final function Redirect();
      *  forward to a new url */
     final static public function Redirect($redirectUrl) {
         if ($redirectUrl) {
             if (headers_sent()) {   die("<script>document.location=\"" . $redirectUrl . "\";</script>");
-            } else {                die(header('Location: ' . $redirectUrl, true, 302)); }
+            } else {
+                header('Location: ' . $redirectUrl, true, 302);
+                exit;
+            }
         }
     }
     

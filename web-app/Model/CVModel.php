@@ -74,7 +74,7 @@ class CVModel extends AppModel {
 
     public static function validateUploadedFiles(){
         if(filter_has_var(INPUT_POST, 'bioCmd')) {
-            if(filter_input(INPUT_POST, 'bioCmd', FILTER_SANITIZE_STRING) === "upload") {
+            if(cf::requestStr(INPUT_POST, 'bioCmd') === "upload") {
                 ApplyFormModel::validateBio('afBio', false);
             }
         } else {
@@ -86,7 +86,7 @@ class CVModel extends AppModel {
         }
 
         if(filter_has_var(INPUT_POST, 'cvCmd')) {
-            if(filter_input(INPUT_POST, 'cvCmd', FILTER_SANITIZE_STRING) === "upload") {
+            if(cf::requestStr(INPUT_POST, 'cvCmd') === "upload") {
                 ApplyFormModel::validateBio('afCurrentCV', false);
             }
         } else {
@@ -105,7 +105,7 @@ class CVModel extends AppModel {
 
         $saveBio = false;
         if(filter_has_var(INPUT_POST, 'bioCmd')) {
-            switch (filter_input(INPUT_POST, 'bioCmd', FILTER_SANITIZE_STRING)) {
+            switch (cf::requestStr(INPUT_POST, 'bioCmd')) {
                 case "remove" :
                 $rec = self::loadFileRecord($afID, self::APPLICATION_CV);
                 self::removeFileAndRecord($rec);
@@ -134,7 +134,7 @@ class CVModel extends AppModel {
 
         $saveCV = false;
         if(filter_has_var(INPUT_POST, 'cvCmd')) {
-            switch (filter_input(INPUT_POST, 'cvCmd', FILTER_SANITIZE_STRING)) {
+            switch (cf::requestStr(INPUT_POST, 'cvCmd')) {
                 case 'remove':
                 $rec = self::loadFileRecord($afID, self::CURRENT_CV);
                 self::removeFileAndRecord($rec);

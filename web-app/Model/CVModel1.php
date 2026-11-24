@@ -7,8 +7,6 @@ class CVModel extends AppModel {
     static $fldLbl = array();
     static $addonFieldsByTables;
     static $postOverrided = array();
-    $cust = $_SESSION['customerID'];
-	define ( "UPLOAD_PATH" , "add/customer{$cust}/uploads/");
     const APPLICATION_CV = "application_cv";
     const CURRENT_CV = "current_cv";
 
