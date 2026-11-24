@@ -123,4 +123,138 @@ class PositionController extends AppController
 
         parent::Delete();
     }
+
+    final static function Assignments()
+    {
+        if (empty(self::$id)) {
+            cf::Redirect(ADMIN . "positions");
+        }
+
+        $lists = array();
+        $lists["credentialings"] = CredentialingModel::AllActiveKeyName();
+        $lists["onboarding"] = OnboardingModel::AllActiveKeyNameEmpl(null, "on");
+        $lists["offboarding"] = OnboardingModel::AllActiveKeyNameEmpl(null, "off");
+
+        $lists["assignedCredentialings"] = array_map("intval", array_column(
+            CredentialingPositionsModel::LoadPositionCredentialings(self::$id),
+            "cID"
+        ));
+        $lists["assignedOnboarding"] = array_map("intval", array_column(
+            OnboardingPositionsModel::LoadPositionOnboardingsONBOnly(self::$id),
+            "otID"
+        ));
+        $lists["assignedOffboarding"] = array_map("intval", array_column(
+            OnboardingPositionsModel::LoadPositionOffboardings(self::$id),
+            "otID"
+        ));
+
+        $otherPositions = PositionModel::AllActiveKeyName(null, true);
+        if (!is_array($otherPositions)) {
+            $otherPositions = array();
+        }
+        unset($otherPositions[self::$id]);
+        $lists["otherPositions"] = $otherPositions;
+
+        msg::get();
+        PositionView::Assignments(self::$data, self::$pg, PositionModel::$fldLbl, $lists);
+    }
+
+    private static function assignmentIdsForPosition($pID)
+    {
+        $pID = (int)$pID;
+        return array(
+            "credentialings" => array_map("intval", array_column(
+                CredentialingPositionsModel::LoadPositionCredentialings($pID),
+                "cID"
+            )),
+            "onboarding" => array_map("intval", array_column(
+                OnboardingPositionsModel::LoadPositionOnboardingsONBOnly($pID),
+                "otID"
+            )),
+            "offboarding" => array_map("intval", array_column(
+                OnboardingPositionsModel::LoadPositionOffboardings($pID),
+                "otID"
+            )),
+        );
+    }
+
+    private static function applyPositionAssignments($pID, $newCreds, $newOn, $newOff)
+    {
+        $pID = (int)$pID;
+        $newCreds = array_values(array_filter(array_map("intval", (array)$newCreds)));
+        $newOn = array_values(array_filter(array_map("intval", (array)$newOn)));
+        $newOff = array_values(array_filter(array_map("intval", (array)$newOff)));
+
+        $oldCreds = array_map("intval", array_column(
+            CredentialingPositionsModel::LoadPositionCredentialings($pID),
+            "cID"
+        ));
+
+        foreach ($oldCreds as $old) {
+            if (!in_array($old, $newCreds, true)) {
+                EmployeeCredentialingModel::RemovePosition($old, $pID);
+            }
+        }
+        foreach ($newCreds as $new) {
+            if ($new > 0 && !in_array($new, $oldCreds, true)) {
+                EmployeeCredentialingModel::AddPositionIfNotExists($new, $pID);
+            }
+        }
+
+        CredentialingPositionsModel::SavePositionCredentialings($pID, $newCreds);
+        OnboardingPositionsModel::SavePositionTasks($pID, $newOn, "on");
+        OnboardingPositionsModel::SavePositionTasks($pID, $newOff, "off");
+    }
+
+    final static function AssignmentsSave()
+    {
+        if (empty(self::$id)) {
+            cf::Redirect(ADMIN . "positions");
+        }
+
+        $newCreds = filter_has_var(INPUT_POST, "pCredentialings")
+            ? array_values(array_map("intval", (array)filter_input(INPUT_POST, "pCredentialings", FILTER_DEFAULT, FILTER_FORCE_ARRAY)))
+            : [];
+        $newOn = filter_has_var(INPUT_POST, "pOnboarding")
+            ? array_values(array_map("intval", (array)filter_input(INPUT_POST, "pOnboarding", FILTER_DEFAULT, FILTER_FORCE_ARRAY)))
+            : [];
+        $newOff = filter_has_var(INPUT_POST, "pOffboarding")
+            ? array_values(array_map("intval", (array)filter_input(INPUT_POST, "pOffboarding", FILTER_DEFAULT, FILTER_FORCE_ARRAY)))
+            : [];
+
+        self::applyPositionAssignments(self::$id, $newCreds, $newOn, $newOff);
+
+        msg::set(TXT_SAVE_OK, "success");
+        cf::Redirect(ADMIN . "position-assignments?id=" . (int)self::$id);
+    }
+
+    final static function AssignmentsCopy()
+    {
+        if (empty(self::$id)) {
+            cf::Redirect(ADMIN . "positions");
+        }
+
+        $sourceId = (int)filter_input(INPUT_POST, "copyFromPID", FILTER_VALIDATE_INT);
+        if ($sourceId <= 0 || $sourceId === (int)self::$id) {
+            msg::set("Please select a position to copy from.", "error");
+            cf::Redirect(ADMIN . "position-assignments?id=" . (int)self::$id);
+        }
+
+        $source = PositionModel::dataById($sourceId);
+        if (empty($source)) {
+            msg::set("The selected position was not found.", "error");
+            cf::Redirect(ADMIN . "position-assignments?id=" . (int)self::$id);
+        }
+
+        $copied = self::assignmentIdsForPosition($sourceId);
+        self::applyPositionAssignments(
+            self::$id,
+            $copied["credentialings"],
+            $copied["onboarding"],
+            $copied["offboarding"]
+        );
+
+        msg::set(TXT_SAVE_OK, "success");
+        cf::Redirect(ADMIN . "position-assignments?id=" . (int)self::$id);
+    }
 }

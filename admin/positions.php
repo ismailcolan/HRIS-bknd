@@ -29,6 +29,7 @@ class Positions extends PageAdmin
         $pg["inactive-list"]=   array("url" => "inactive-".strtolower($pg["items"]), "title" => "Inactive ".strtolower($pg["items"]));
         $pg["summary"]      =   array("url" => strtolower($pg["item"]), "title" => $pg["item"]);
         $pg["details"]      =   array("url" => strtolower($pg["item"])."-details", "title" => $pg["item"]);
+        $pg["assignments"]  =   array("url" => strtolower($pg["item"])."-assignments", "title" => "Credentialing, Onboarding & Off-boarding");
         $pg["tbl"]          =   $M::$dt["tbl"];
         $pg["key"]          =   $M::$dt["key"];
         $pg["pfx"]          =   $M::$dt["pfx"];
@@ -62,6 +63,16 @@ if(in_array($adminSection::$rq, array("list", "inactive-list"))) {
         $adminSection->DetailsSave();
     } else {
         $adminSection->Details();
+    }
+} else if($adminSection::$rq === "assignments") {
+    if(filter_input(INPUT_SERVER, "REQUEST_METHOD") === "POST" || $_SERVER['REQUEST_METHOD'] === 'POST') {
+        if(filter_has_var(INPUT_POST, "copy-btn")) {
+            $adminSection->AssignmentsCopy();
+        } else {
+            $adminSection->AssignmentsSave();
+        }
+    } else {
+        $adminSection->Assignments();
     }
 }
 

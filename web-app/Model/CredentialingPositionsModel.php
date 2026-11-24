@@ -63,4 +63,21 @@ class CredentialingPositionsModel extends AppModel {
         return db::Save($q);
     }
 
+    public static function SavePositionCredentialings($pID, $cIDs = []) {
+        $pid = intval($pID);
+        $q = "delete from `".self::$dt['tbl']."` where `cpPID` = ".$pid;
+        db::SQL($q);
+
+        $q = [];
+        if(empty($cIDs)) { $cIDs = []; }
+        foreach ($cIDs as $cid) {
+            $cid = intval($cid);
+            if ($cid <= 0) {
+                continue;
+            }
+            $q[] = "insert into `".self::$dt['tbl']."` (`cpCID`, `cpPID`) values($cid, $pid)";
+        }
+        return db::Save($q);
+    }
+
 }
